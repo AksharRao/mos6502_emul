@@ -1,15 +1,24 @@
+# Detect OS
+OS := $(shell uname)
+# For Linux
+ifeq ($(OS), Linux)
+    CC = gcc
+endif
+# For macOS
+ifeq ($(OS), Darwin)
+    CC = clang
+endif
 CFLAGS = -std=c17 -Wall -Wextra -Werror
-CC = clang
-TARGET = m6502
-SRC = m6502.c
+TARGET = build/m6502
+SRC = src/main.c src/cpu.c 
 
 all: $(TARGET)
 
 $(TARGET): $(SRC)
-	$(CC) $(CFLAGS) $(SRC) -o $(TARGET)
+	$(CC) $(CFLAGS) $(SRC) -I. -o $(TARGET)
 
 run: $(TARGET)
 	./$(TARGET)
 
 clean:
-	rm -f $(TARGET)
+	rm -f ./$(TARGET)

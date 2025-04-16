@@ -1,5 +1,0 @@
----
-triple:          'arm64-apple-darwin'
-binary-path:     '/Users/akshar/Desktop/mos6502/m6502'
-relocations:     []
-...
