@@ -2,6 +2,7 @@
 #define CPU_H
 
 #include<stdint.h>
+#include "memory.h"
 
 typedef uint8_t byte;   // shorthand for 8-bit unsigned integer
 typedef uint16_t word;  // shorthand for 16-bit unsigned integer
@@ -13,10 +14,10 @@ typedef enum {
 } bool;
 
 typedef struct cpu {
-    byte accumulator; // Accumulator Register
-    byte indexX, indexY; // Index (Auxiliary) Registers
-    word stackPointer;   // Stack Pointer
-    word programCounter; // Program Counter
+    byte acc; // Accumulator Register A
+    byte indX, indY; // Index (Auxiliary) Registers X and Y
+    word sp;   // Stack Pointer (sp)
+    word pc; // Program Counter (pc)
 
     //Status Registers
     bool negative;
@@ -30,8 +31,12 @@ typedef struct cpu {
 
 } cpu_t; // Interesting: "_t" is used to tell the said datatype is defined using typedef
 
+//prototypes to be used in cpu.c
 void initialize(cpu_t *cpu);
 void reset(cpu_t *cpu);
 void printCpuState(cpu_t *cpu);
+
+byte fetch_byte(dword *clk_cycle, mem_t *mem, cpu_t *cpu);
+void execInstr(dword *clk_cycle, mem_t *mem, cpu_t *cpu);
 
 #endif

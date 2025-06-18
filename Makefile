@@ -10,7 +10,7 @@ ifeq ($(OS), Darwin)
 endif
 CFLAGS = -std=c17 -Wall -Wextra -Werror
 TARGET = build/m6502
-SRC = src/main.c src/cpu.c 
+SRC = src/main.c src/cpu.c src/memory.c
 
 all: $(TARGET)
 
@@ -22,3 +22,6 @@ run: $(TARGET)
 
 clean:
 	rm -f ./$(TARGET)
+
+debug: 
+	$(CC) $(CFLAGS) -g $(SRC) -I. -o $(TARGET) -DDEBUG_MEMORY

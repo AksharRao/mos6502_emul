@@ -1,13 +1,14 @@
 #include "include/cpu.h"
+#include "include/memory.h"
 #include<stdio.h>
 
 // Initialize the CPU registers and flags
 void initialize(cpu_t *cpu){
-    cpu->accumulator = 0;   
-    cpu->indexX = 0;
-    cpu->indexY = 0;
-    cpu->stackPointer = 0x0100; // Initialize stack pointer to 0x0100
-    cpu->programCounter = 0xFFFC; // Initialize program counter to 0xFFFC
+    cpu->acc = 0;   
+    cpu->indX = 0;
+    cpu->indY = 0;
+    cpu->sp = 0x0100; // Initialize stack pointer to 0x0100
+    cpu->pc = 0xFFFC; // Initialize program counter to 0xFFFC
 
     // Initialize status flags
     cpu->negative = false;  
@@ -22,11 +23,11 @@ void initialize(cpu_t *cpu){
 
 // Reset the CPU registers and flags to their initial state
 void reset(cpu_t *cpu){
-    cpu->accumulator = 0;   
-    cpu->indexX = 0;
-    cpu->indexY = 0;
-    cpu->stackPointer = 0x0100; // Initialize stack pointer to 0x0100
-    cpu->programCounter = 0xFFFC; // Initialize program counter to 0xFFFC
+    cpu->acc = 0;   
+    cpu->indX = 0;
+    cpu->indY = 0;
+    cpu->sp = 0x0100; // Initialize stack pointer to 0x0100
+    cpu->pc = 0xFFFC; // Initialize program counter to 0xFFFC
 
     // Initialize status flags
     cpu->negative = false;  
@@ -42,10 +43,10 @@ void reset(cpu_t *cpu){
 // Print the current state of the CPU registers and flags
 void printCpuState(cpu_t *cpu){
     printf("CPU State:\n\n"); 
-    printf("Accumulator: %d\n", cpu->accumulator);
-    printf("Index X: %d\tIndex Y: %d\n", cpu->indexX, cpu->indexY);
-    printf("Stack Pointer: %04X\n", cpu->stackPointer);
-    printf("Program Counter: %04X\n\n", cpu->programCounter);
+    printf("Accumulator: %d\n", cpu->acc);
+    printf("Index X: %d\tIndex Y: %d\n", cpu->indX, cpu->indY);
+    printf("Stack Pointer: %04X\n", cpu->sp);
+    printf("Program Counter: %04X\n\n", cpu->pc);
     printf("Status Flags:\n");
     printf("Negative Flag: %d\n", cpu->negative);
     printf("Overflow Flag: %d\n", cpu->overflow);           
@@ -56,4 +57,28 @@ void printCpuState(cpu_t *cpu){
     printf("Zero Flag: %d\n", cpu->zeroFlag);
     printf("Carry Flag: %d\n", cpu->carryFlag);
     printf("\n");
+}
+
+byte fetch_byte(dword *clk_cycle, mem_t *mem, cpu_t *cpu) {
+    // Fetch a byte from memory at the current program counter (pc)
+    // and increment the program counter by 1.
+    if (*clk_cycle == 0) {
+        return 0; // No clock cycle, return 0
+    }
+    
+    byte data = mem->data[cpu->pc]; // Fetch byte from memory
+    cpu->pc++;
+    (*clk_cycle)--; // Decrement the clock cycle
+    return data;
+}
+
+void execInstr(dword *clk_cycle, mem_t *mem, cpu_t *cpu) {
+    // Placeholder for instruction execution logic
+    // This function will execute the instruction at the current program counter (pc)
+    // and update the CPU state accordingly.
+    
+    while (*clk_cycle > 0) {
+        //Fetch the instruction from memory at current PC
+        byte instruction = fetch_byte(clk_cycle, mem, cpu);
+    }
 }
