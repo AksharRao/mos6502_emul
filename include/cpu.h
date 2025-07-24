@@ -1,17 +1,8 @@
 #ifndef CPU_H
 #define CPU_H
 
-#include<stdint.h>
+#include "types.h"
 #include "memory.h"
-
-typedef uint8_t byte;   // shorthand for 8-bit unsigned integer
-typedef uint16_t word;  // shorthand for 16-bit unsigned integer
-typedef uint32_t dword; // shorthand for 32-bit unsigned integer
-
-typedef enum { 
-    false, 
-    true
-} bool;
 
 typedef struct cpu {
     byte acc; // Accumulator Register A

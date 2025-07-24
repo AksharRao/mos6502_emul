@@ -80,5 +80,6 @@ void execInstr(dword *clk_cycle, mem_t *mem, cpu_t *cpu) {
     while (*clk_cycle > 0) {
         //Fetch the instruction from memory at current PC
         byte instruction = fetch_byte(clk_cycle, mem, cpu);
+        (void)instruction; 
     }
 }

@@ -1,15 +1,12 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 
-#include<stdint.h>
+#include "types.h"
 
 #define max_mem 1024 * 64 //64KB of addressable memory
-typedef uint8_t byte;   // shorthand for 8-bit unsigned integer
-typedef uint16_t word;  // shorthand for 16-bit unsigned integer
-typedef uint32_t dword; // shorthand for 32-bit unsigned integer
 
 typedef struct{
-    byte data[max_mem]; // Memory array of 64KB}
+    byte data[max_mem]; // Memory array of 64KB
 } mem_t;
 
 void initMemory(mem_t *mem); //initialising memory
