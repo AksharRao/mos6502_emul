@@ -1,9 +1,10 @@
 #include "include/cpu.h"
 #include "include/memory.h"
+#include "include/instruction.h"
 #include<stdio.h>
 
 // Initialize the CPU registers and flags
-void initialize(cpu_t *cpu){
+void cpu_init(cpu_t *cpu){
     cpu->acc = 0;   
     cpu->indX = 0;
     cpu->indY = 0;
@@ -22,7 +23,7 @@ void initialize(cpu_t *cpu){
 }
 
 // Reset the CPU registers and flags to their initial state
-void reset(cpu_t *cpu){
+void cpu_reset(cpu_t *cpu){
     cpu->acc = 0;   
     cpu->indX = 0;
     cpu->indY = 0;
@@ -41,8 +42,8 @@ void reset(cpu_t *cpu){
 }
 
 // Print the current state of the CPU registers and flags
-void printCpuState(cpu_t *cpu){
-    printf("CPU State:\n\n"); 
+void print_cpu_state(cpu_t *cpu){
+    printf("\nCPU State:\n"); 
     printf("Accumulator: %d\n", cpu->acc);
     printf("Index X: %d\tIndex Y: %d\n", cpu->indX, cpu->indY);
     printf("Stack Pointer: %04X\n", cpu->sp);
@@ -59,7 +60,7 @@ void printCpuState(cpu_t *cpu){
     printf("\n");
 }
 
-byte fetch_byte(dword *clk_cycle, mem_t *mem, cpu_t *cpu) {
+byte fetch_byte(dword *clk_cycle, cpu_t *cpu, mem_t *mem) {
     // Fetch a byte from memory at the current program counter (pc)
     // and increment the program counter by 1.
     if (*clk_cycle == 0) {
@@ -72,14 +73,14 @@ byte fetch_byte(dword *clk_cycle, mem_t *mem, cpu_t *cpu) {
     return data;
 }
 
-void execInstr(dword *clk_cycle, mem_t *mem, cpu_t *cpu) {
+void exec_instr(dword *clk_cycle, cpu_t *cpu, mem_t *mem) {
     // Placeholder for instruction execution logic
     // This function will execute the instruction at the current program counter (pc)
     // and update the CPU state accordingly.
     
-    while (*clk_cycle > 0) {
+    while (*clk_cycle > 0 && !cpu->breakFlag) {
         //Fetch the instruction from memory at current PC
-        byte instruction = fetch_byte(clk_cycle, mem, cpu);
-        (void)instruction; 
+        byte instruction = fetch_byte(clk_cycle, cpu, mem);
+        decode_and_execute(cpu, mem, instruction);
     }
 }

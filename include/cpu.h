@@ -23,11 +23,11 @@ typedef struct cpu {
 } cpu_t; // Interesting: "_t" is used to tell the said datatype is defined using typedef
 
 //prototypes to be used in cpu.c
-void initialize(cpu_t *cpu);
-void reset(cpu_t *cpu);
-void printCpuState(cpu_t *cpu);
+void cpu_init(cpu_t *cpu);
+void cpu_reset(cpu_t *cpu);
+void print_cpu_state(cpu_t *cpu);
 
-byte fetch_byte(dword *clk_cycle, mem_t *mem, cpu_t *cpu);
-void execInstr(dword *clk_cycle, mem_t *mem, cpu_t *cpu);
+byte fetch_byte(dword *clk_cycle, cpu_t *cpu, mem_t *mem);
+void exec_instr(dword *clk_cycle, cpu_t *cpu, mem_t *mem);
 
 #endif

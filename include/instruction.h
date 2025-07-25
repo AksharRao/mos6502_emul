@@ -4,6 +4,8 @@
 #include "types.h"
 #include "cpu.h"
 #include "memory.h"
+#include "stdlib.h"
+#include "stdio.h"
 
 typedef enum{
     ADDR_IMPLIED, //Implied as in generally Accumulator
@@ -27,5 +29,8 @@ typedef struct {
 } instruction_t;
 
 void decode_and_execute(cpu_t* cpu, mem_t* mem, byte opcode);
+
+void instr_BRK(cpu_t* cpu, mem_t* mem);
+void instr_LDA_immediate(cpu_t* cpu, mem_t* mem);
 
 #endif

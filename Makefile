@@ -10,7 +10,7 @@ ifeq ($(OS), Darwin)
 endif
 CFLAGS = -std=c17 -Wall -Wextra -Werror
 TARGET = build/m6502
-SRC = src/main.c src/cpu.c src/memory.c
+SRC = src/main.c src/cpu.c src/memory.c src/instruction.c
 
 all: $(TARGET)
 

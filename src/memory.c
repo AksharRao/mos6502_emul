@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-void initMemory(mem_t *mem) {
+void mem_init(mem_t *mem) {
     for (int i = 0; i < max_mem; i++) {
         mem->data[i] = 0; // Initialize all memory locations to 0
     }
@@ -11,7 +11,7 @@ void initMemory(mem_t *mem) {
 
 #ifdef DEBUG_MEMORY
 
-void printMemory(mem_t *mem) {
+void print_memory(mem_t *mem) {
     printf("Memory contents:\n");
     for (dword i = 0; i < max_mem; i++) {
         if (i % 16 == 0) {
@@ -32,7 +32,7 @@ byte read_byte(dword address, mem_t *mem) {
     }
 }
 
-void write_byte(dword address, byte value, mem_t *mem) {
+void write_byte(dword address, mem_t *mem, byte value) {
     if (address < max_mem) {
         mem->data[address] = value; // Write the byte to the specified address
     } else {
