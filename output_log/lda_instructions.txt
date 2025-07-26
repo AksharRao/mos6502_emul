@@ -1,0 +1,193 @@
+
+CPU State:
+Accumulator: 0
+Index X: 0	Index Y: 0
+Stack Pointer: 0100
+Program Counter: FFFC
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 0
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 1
+Carry Flag: 0
+
+Memory initialized to 0.
+Executing: LDA #oper - immediate (0xA9) - 2 cycles
+		Loaded 66 (0x42) to accumulator
+
+CPU State:
+Accumulator: 66
+Index X: 5	Index Y: 3
+Stack Pointer: 0100
+Program Counter: FFFE
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 0
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDA oper - zeropage (0xA5) - 3 cycles
+		Loaded 105 (0x69)
+		from zero page address (0x42)
+CPU State:
+Accumulator: 105
+Index X: 5	Index Y: 3
+Stack Pointer: 0100
+Program Counter: 0000
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 0
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDA oper, X - zeropage, x (0xB5) - 4 cycles
+		Loaded 0 (0x00)
+		from zero page address (0x40),X
+		(0x40 + 0x05 = 0x45)
+
+CPU State:
+Accumulator: 0
+Index X: 5	Index Y: 3
+Stack Pointer: 0100
+Program Counter: 0002
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 0
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 1
+Carry Flag: 0
+
+Executing: LDA oper - absolute (0xAD) - 4 cycles
+		Loaded 136 (0x88)
+		from absolute address (0x1234)
+
+CPU State:
+Accumulator: 136
+Index X: 5	Index Y: 3
+Stack Pointer: 0100
+Program Counter: 0005
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 0
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDA oper, X - absolute, x (0xBD) - 4 cycles
+		Loaded 137 (0x89)
+		from absolute address (0x5678), X
+		(0x5678 + 0x05 = 0x567D)
+
+CPU State:
+Accumulator: 137
+Index X: 5	Index Y: 3
+Stack Pointer: 0100
+Program Counter: 0008
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 0
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDA (oper, X) - indirect, x (0xA1) - 6 cycles
+		Loaded 170 (0xAA) from ($20,X)
+		($20 + $05 = $25) -> $8000
+
+CPU State:
+Accumulator: 170
+Index X: 5	Index Y: 3
+Stack Pointer: 0100
+Program Counter: 000A
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 0
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDA (oper), Y - indirect, y (0xB1) - 6 cycles
+		Loaded 187 (0xBB) from ($30),Y
+		($2000 + $03 = $2003)
+
+CPU State:
+Accumulator: 187
+Index X: 5	Index Y: 3
+Stack Pointer: 0100
+Program Counter: 000C
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 0
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: BRK (0x00) - 7 cycles
+
+CPU State:
+Accumulator: 187
+Index X: 5	Index Y: 3
+Stack Pointer: 0100
+Program Counter: 000D
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 0
+Break Flag: 1
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+
+CPU State:
+Accumulator: 187
+Index X: 5	Index Y: 3
+Stack Pointer: 0100
+Program Counter: 000D
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 0
+Break Flag: 1
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+

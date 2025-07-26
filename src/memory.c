@@ -32,6 +32,18 @@ byte read_byte(dword address, mem_t *mem) {
     }
 }
 
+word read_word(dword address, mem_t *mem) {
+    if (address < max_mem - 1) {
+        byte low_byte = mem->data[address]; // Return the byte at the specified address
+        byte high_byte = mem->data[address+1];
+        word data = (high_byte<<8) | low_byte;
+        return data;
+    } else {
+        printf("Error: Address out of bounds.\n");
+        return 0; // Return 0 if address is out of bounds
+    }
+}
+
 void write_byte(dword address, mem_t *mem, byte value) {
     if (address < max_mem) {
         mem->data[address] = value; // Write the byte to the specified address

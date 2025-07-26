@@ -23,5 +23,5 @@ run: $(TARGET)
 clean:
 	rm -f ./$(TARGET)
 
-debug: 
+debug: $(SRC)
 	$(CC) $(CFLAGS) -g $(SRC) -I. -o $(TARGET) -DDEBUG_MEMORY

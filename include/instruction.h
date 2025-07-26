@@ -7,30 +7,26 @@
 #include "stdlib.h"
 #include "stdio.h"
 
-typedef enum{
-    ADDR_IMPLIED, //Implied as in generally Accumulator
-    ADDR_IMMEDIATE,
-    ADDR_ZEROPAGE, // One cycle less than absolute
-    ADDR_ZEROPAGE_X,
-    ADDR_ABSOLUTE,
-    ADDR_ABSOLUTE_X, // One or two cycles more than absolute
-    ADDR_ABSOLUTE_Y,
-    ADDR_INDIRECT,
-    ADDR_INDIRECT_X,
-    ADDR_INDIRECT_Y,
-    ADDR_RELATIVE
-} addressing_mode_t;
-
-typedef struct {
-    const char* name;
-    addressing_mode_t addressing_mode;
-    byte cycles;
-    void (*execute)(cpu_t* cpu, mem_t* mem);
-} instruction_t;
-
-void decode_and_execute(cpu_t* cpu, mem_t* mem, byte opcode);
-
 void instr_BRK(cpu_t* cpu, mem_t* mem);
 void instr_LDA_immediate(cpu_t* cpu, mem_t* mem);
+void instr_LDA_zeropage(cpu_t* cpu, mem_t* mem);
+void instr_LDA_zeropage_x(cpu_t* cpu, mem_t* mem);
+void instr_LDA_absolute(cpu_t* cpu, mem_t* mem);
+void instr_LDA_absolute_x(cpu_t* cpu, mem_t* mem);
+void instr_LDA_absolute_y(cpu_t* cpu, mem_t* mem);
+void instr_LDA_indirect_x(cpu_t* cpu, mem_t* mem);
+void instr_LDA_indirect_y(cpu_t* cpu, mem_t* mem);
+
+static instruction_t instruction_table[] = {
+    [0x00] = {"BRK", ADDR_IMPLIED, 7, instr_BRK},
+    [0xA9] = {"LDA #oper - immediate", ADDR_IMMEDIATE, 2, instr_LDA_immediate},
+    [0xA5] = {"LDA oper - zeropage", ADDR_ZEROPAGE, 3, instr_LDA_zeropage},
+    [0xB5] = {"LDA oper, X - zeropage, x", ADDR_ZEROPAGE_X, 4, instr_LDA_zeropage_x},
+    [0xAD] = {"LDA oper - absolute", ADDR_ABSOLUTE, 4, instr_LDA_absolute},
+    [0xBD] = {"LDA oper, X - absolute, x", ADDR_ABSOLUTE_X, 4, instr_LDA_absolute_x},
+    [0xB9] = {"LDA oper, Y - apsolute, y", ADDR_ABSOLUTE_Y, 4, instr_LDA_absolute_y},
+    [0xA1] = {"LDA (oper, X) - indirect, x", ADDR_INDIRECT_X, 6, instr_LDA_indirect_x},
+    [0xB1] = {"LDA (oper), Y - indirect, y", ADDR_INDIRECT_X, 6, instr_LDA_indirect_y}
+};
 
 #endif

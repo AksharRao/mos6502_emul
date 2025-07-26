@@ -60,27 +60,44 @@ void print_cpu_state(cpu_t *cpu){
     printf("\n");
 }
 
-byte fetch_byte(dword *clk_cycle, cpu_t *cpu, mem_t *mem) {
-    // Fetch a byte from memory at the current program counter (pc)
-    // and increment the program counter by 1.
-    if (*clk_cycle == 0) {
-        return 0; // No clock cycle, return 0
-    }
-    
-    byte data = mem->data[cpu->pc]; // Fetch byte from memory
+byte fetch_byte(cpu_t *cpu, mem_t *mem){
+    word data = mem->data[cpu->pc]; // Fetch byte from memory
     cpu->pc++;
-    (*clk_cycle)--; // Decrement the clock cycle
     return data;
 }
 
-void exec_instr(dword *clk_cycle, cpu_t *cpu, mem_t *mem) {
+word fetch_word(cpu_t *cpu, mem_t *mem){
+    byte low_byte = fetch_byte(cpu, mem);
+    byte high_byte = fetch_byte(cpu, mem);
+    word data = (high_byte<<8) | low_byte;
+    return data;
+}
+
+void exec_instr(dword *clk_cycle, cpu_t *cpu, mem_t *mem){
     // Placeholder for instruction execution logic
     // This function will execute the instruction at the current program counter (pc)
     // and update the CPU state accordingly.
-    
+
+    //Fetch the instruction from memory at current PC
     while (*clk_cycle > 0 && !cpu->breakFlag) {
-        //Fetch the instruction from memory at current PC
-        byte instruction = fetch_byte(clk_cycle, cpu, mem);
-        decode_and_execute(cpu, mem, instruction);
+        byte instruction = fetch_byte(cpu, mem);
+        instruction_t* instr = &instruction_table[instruction];
+
+        if (instr->execute == NULL) {
+            printf("Unknown opcode: 0x%02X at PC: 0x%04X\n", instruction, cpu->pc);
+            return;
+        }
+        // Check if we have enough cycles
+        if (*clk_cycle < instr->cycles) {
+            cpu->pc--;
+            break;
+        }
+        printf("Executing: %s (0x%02X) - %d cycles\n", instr->name, instruction, instr->cycles);
+        instr->execute(cpu, mem);
+        *clk_cycle -= instr->cycles;
+        print_cpu_state(cpu);
+        #ifdef DEBUG_MEMORY
+        print_memory(mem);
+        #endif // DEBUG_MEMORY
     }
 }

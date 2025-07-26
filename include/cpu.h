@@ -4,30 +4,13 @@
 #include "types.h"
 #include "memory.h"
 
-typedef struct cpu {
-    byte acc; // Accumulator Register A
-    byte indX, indY; // Index (Auxiliary) Registers X and Y
-    word sp;   // Stack Pointer (sp)
-    word pc; // Program Counter (pc)
-
-    //Status Registers
-    bool negative;
-    bool overflow;
-    bool unused;
-    bool breakFlag;
-    bool decimalFlag;
-    bool irqFlag;
-    bool zeroFlag;
-    bool carryFlag;
-
-} cpu_t; // Interesting: "_t" is used to tell the said datatype is defined using typedef
-
 //prototypes to be used in cpu.c
 void cpu_init(cpu_t *cpu);
 void cpu_reset(cpu_t *cpu);
 void print_cpu_state(cpu_t *cpu);
 
-byte fetch_byte(dword *clk_cycle, cpu_t *cpu, mem_t *mem);
+byte fetch_byte(cpu_t *cpu, mem_t *mem);
+word fetch_word(cpu_t *cpu, mem_t *mem);
 void exec_instr(dword *clk_cycle, cpu_t *cpu, mem_t *mem);
 
 #endif
