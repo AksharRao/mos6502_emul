@@ -70,3 +70,7 @@ The emulator can be extended to include:
 - Additional instruction sets (STA, LDX, LDY, arithmetic operations)
 - Interrupt handling
 - Assembler integration
+
+## Verilog
+
+Hardware implementation of the same can be found [here](https://github.com/AksharRao/mos6502-verilog).

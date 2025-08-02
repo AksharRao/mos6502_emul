@@ -5,6 +5,7 @@ void instr_BRK(cpu_t* cpu, mem_t* mem){
     (void)mem;
 }
 
+// LDA Instructions
 void instr_LDA_immediate(cpu_t* cpu, mem_t* mem){
     cpu->acc = fetch_byte(cpu, mem);
     printf("\t\tLoaded %d (0x%02X) to accumulator\n", cpu->acc, cpu->acc);
@@ -82,5 +83,15 @@ void instr_LDA_indirect_y(cpu_t* cpu, mem_t* mem){
     cpu->zeroFlag = (cpu->acc == 0);
 }
 
+// STA Instructions
+void instr_STA_zeropage(cpu_t* cpu, mem_t* mem){
+    byte zp_address = fetch_byte(cpu, mem);
+    write_byte(zp_address, mem, cpu->acc);
+    printf("\t\tStored %d (0x%02X) to zero page address (0x%02X)\n", 
+       cpu->acc, cpu->acc, zp_address);
+}
 
+void instr_STA_zeropage_x(cpu_t* cpu, mem_t* mem){
+    
+}
 
