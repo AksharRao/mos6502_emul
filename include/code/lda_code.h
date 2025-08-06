@@ -1,17 +1,14 @@
-cpu.indX = 0x05; // value at x index register
-cpu.indY = 0x03; // value at y index register
-
 // LDA $42h
 write_byte(0xFFFC, &mem, 0xA9); // LDA immediate
 write_byte(0xFFFD, &mem, 0x42); // Value 0x42
 
 write_byte(0xFFFE, &mem, 0xA5); // LDA zeropage
 write_byte(0xFFFF, &mem, 0x42); // Zeropage address
-// write_byte(0x0042, &mem, 0x69); // Data at zero page 0x42
+write_byte(0x0042, &mem, 0x69); // Data at zero page 0x42
 
 write_byte(0x0000, &mem, 0xB5); // LDA zeropage, x
 write_byte(0x0001, &mem, 0x40); // zero page address
-// write_byte(0x05, &mem, 0x99); // value at zeropage + indX
+write_byte(0x05, &mem, 0x99); // value at zeropage + indX
 
 write_byte(0x0002, &mem, 0xAD); // LDA absolute 
 write_byte(0x0003, &mem, 0x34); // low byte

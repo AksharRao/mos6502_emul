@@ -23,6 +23,10 @@ void print_memory(mem_t *mem) {
 }
 #endif // DEBUG_MEMORY
 
+void print_memory_address(mem_t *mem, word address){
+    printf("\nValue at memory location 0x%04X : %d (0x%02X)\n", address, mem->data[address], mem->data[address]);
+}
+
 byte read_byte(dword address, mem_t *mem) {
     if (address < max_mem) {
         return mem->data[address]; // Return the byte at the specified address

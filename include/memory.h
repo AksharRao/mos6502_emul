@@ -12,6 +12,6 @@ void print_memory(mem_t *mem); //printing memory contents
 byte read_byte(dword address, mem_t *mem); //reading a byte from memory
 word read_word(dword address, mem_t *mem); //reading a word from memory
 void write_byte(dword address, mem_t *mem, byte value); //writing a byte to memory
-
+void print_memory_address(mem_t *mem, word address); // read data at memory address
 
 #endif // MEMORY_H
