@@ -32,8 +32,25 @@ void instr_STA_indirect_y(cpu_t* cpu, mem_t* mem);
 void instr_LDX_immediate(cpu_t* cpu, mem_t* mem);
 void instr_LDX_zeropage(cpu_t* cpu, mem_t* mem);
 void instr_LDX_zeropage_y(cpu_t* cpu, mem_t* mem);
-void instr_LDX_absolute(cpu_t* cpu, mam_t* mem);
-void instr_LDX_absolute_y(cpu_t* cpu, mam_t* mem);
+void instr_LDX_absolute(cpu_t* cpu, mem_t* mem);
+void instr_LDX_absolute_y(cpu_t* cpu, mem_t* mem);
+
+// LDY Instructions
+void instr_LDY_immediate(cpu_t* cpu, mem_t* mem);
+void instr_LDY_zeropage(cpu_t* cpu, mem_t* mem);
+void instr_LDY_zeropage_x(cpu_t* cpu, mem_t* mem);
+void instr_LDY_absolute(cpu_t* cpu, mem_t* mem);
+void instr_LDY_absolute_x(cpu_t* cpu, mem_t* mem);
+
+// STX Instructions
+void instr_STX_zeropage(cpu_t* cpu, mem_t* mem);
+void instr_STX_zeropage_y(cpu_t* cpu, mem_t* mem);
+void instr_STX_absolute(cpu_t* cpu, mem_t* mem);
+
+// STY Instructions
+void instr_STY_zeropage(cpu_t* cpu, mem_t* mem);
+void instr_STY_zeropage_x(cpu_t* cpu, mem_t* mem);
+void instr_STY_absolute(cpu_t* cpu, mem_t* mem);
 
 static instruction_t instruction_table[] = {
     // [opcode] = {"Instruction info", no_of_clock_cycles, function_pointer}
@@ -58,6 +75,17 @@ static instruction_t instruction_table[] = {
     [0xB6] = {"LDX oper, Y - zeropage, y", 4, instr_LDX_zeropage_y},
     [0xAE] = {"LDX oper - absolute", 4, instr_LDX_absolute},
     [0xBE] = {"LDX oper, Y - absolute, y", 4, instr_LDX_absolute_y},
+    [0xA0] = {"LDY #oper - immediate", 2, instr_LDY_immediate},
+    [0xA4] = {"LDY oper - zeropage", 3, instr_LDY_zeropage},
+    [0xB4] = {"LDY oper, Y - zeropage, y", 4, instr_LDY_zeropage_x},
+    [0xAC] = {"LDY oper - absolute", 4, instr_LDY_absolute},
+    [0xBC] = {"LDY oper, Y - absolute, y", 4, instr_LDY_absolute_x},
+    [0x86] = {"STX oper - zeropage", 3, instr_STX_zeropage},
+    [0x96] = {"STX oper, Y - zeropage, y", 4, instr_STX_zeropage_y},
+    [0x8E] = {"STX oper - absolute", 4, instr_STX_absolute},
+    [0x84] = {"STY oper - zeropage", 3, instr_STY_zeropage},
+    [0x94] = {"STY oper, X - zeropage, x", 4, instr_STY_zeropage_x},
+    [0x8C] = {"STY oper - absolute", 4, instr_STY_absolute}
 };
 
 #endif

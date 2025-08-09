@@ -128,7 +128,7 @@ void instr_STA_zeropage_x(cpu_t* cpu, mem_t* mem){
     byte zp_address = fetch_byte(cpu, mem);
     byte zp_address_x = (zp_address + cpu->indX) & 0xFF;
     write_byte(zp_address_x, mem, cpu->acc);
-    printf("\t\tStored %d (0x%02X)\n\t\tfrom zero page address (0x%02X),X\n\t\t(0x%02X + 0x%02X = 0x%02X) from Accumulator\n", 
+    printf("\t\tStored %d (0x%02X)\n\t\tto zero page address (0x%02X),X\n\t\t(0x%02X + 0x%02X = 0x%02X) from Accumulator\n", 
         cpu->acc, cpu->acc, zp_address, zp_address, cpu->indX, zp_address_x);
 }
 
@@ -138,7 +138,7 @@ void instr_STA_zeropage_x(cpu_t* cpu, mem_t* mem){
 void instr_STA_absolute(cpu_t* cpu, mem_t* mem){
     word abs_address = fetch_word(cpu, mem);
     write_byte(abs_address, mem, cpu->acc);
-    printf("\t\tStored %d (0x%02X)\n\t\tfrom absolute address (0x%04X) from Accumulator\n", 
+    printf("\t\tStored %d (0x%02X)\n\t\tto absolute address (0x%04X) from Accumulator\n", 
         cpu->acc, cpu->acc, abs_address);
 }
 
@@ -149,7 +149,7 @@ void instr_STA_absolute_x(cpu_t* cpu, mem_t* mem){
     word abs_address = fetch_word(cpu, mem);
     word abs_address_x = abs_address + cpu->indX;
     write_byte(abs_address_x, mem, cpu->acc);
-    printf("\t\tStored %d (0x%02X)\n\t\tfrom absolute address (0x%04X), X\n\t\t(0x%04X + 0x%02X = 0x%04X) from Accumulator\n", 
+    printf("\t\tStored %d (0x%02X)\n\t\tto absolute address (0x%04X), X\n\t\t(0x%04X + 0x%02X = 0x%04X) from Accumulator\n", 
         cpu->acc, cpu->acc, abs_address, abs_address, cpu->indX, abs_address_x);
 }
 
@@ -160,7 +160,7 @@ void instr_STA_absolute_y(cpu_t* cpu, mem_t* mem){
     word abs_address = fetch_word(cpu, mem);
     word abs_address_y = abs_address + cpu->indY;
     write_byte(abs_address_y, mem, cpu->acc);
-    printf("\t\tStored %d (0x%02X)\n\t\tfrom absolute address (0x%04X), Y\n\t\t(0x%04X + 0x%02X = 0x%04X) from Accumulator\n", 
+    printf("\t\tStored %d (0x%02X)\n\t\tto absolute address (0x%04X), Y\n\t\t(0x%04X + 0x%02X = 0x%04X) from Accumulator\n", 
         cpu->acc, cpu->acc, abs_address, abs_address, cpu->indY, abs_address_y);
 }
 
@@ -172,7 +172,7 @@ void instr_STA_indirect_x(cpu_t* cpu, mem_t* mem){
     word zp_pointer =  (zp_address + cpu->indX) & 0xFF;
     word final_address = read_word(zp_pointer, mem);
     write_byte(final_address, mem, cpu->acc);
-    printf("\t\tStored %d (0x%02X) from ($%02X,X)\n\t\t($%02X + $%02X = $%02X) -> $%04X from Accumulator\n", 
+    printf("\t\tStored %d (0x%02X) to ($%02X,X)\n\t\t($%02X + $%02X = $%02X) -> $%04X from Accumulator\n", 
         cpu->acc, cpu->acc, zp_address, zp_address, cpu->indX, zp_pointer, final_address);
 }
 
@@ -184,8 +184,8 @@ void instr_STA_indirect_y(cpu_t* cpu, mem_t* mem){
     word base_pointer = read_word(zp_address, mem);
     word final_address = base_pointer + cpu->indY;
     write_byte(final_address, mem, cpu->acc);
-    printf("\t\tStored %d (0x%02X) from ($%02X),Y\n\t\t($%02X + $%02X = $%02X) -> $%04X from Accumulator\n", 
-        cpu->acc, cpu->acc, zp_address, zp_address, cpu->indY, base_pointer, final_address);
+    printf("\t\tStored %d (0x%02X) to ($%02X),Y\n\t\t($%04X + $%02X = $%04X) from Accumulator\n", 
+        cpu->acc, cpu->acc, zp_address, base_pointer, cpu->indY, final_address);
 }
 
 // LDX Instructions
@@ -228,7 +228,7 @@ void instr_LDX_zeropage_y(cpu_t* cpu, mem_t* mem){
 // LDX oper - absolute 
 // Loads from an absolute address to X index register
 // Ex. LDX $1234 - Loads value from absolute address $1234 into X register
-void instr_LDX_absolute(cpu_t* cpu, mam_t* mem){
+void instr_LDX_absolute(cpu_t* cpu, mem_t* mem){
     word abs_address = fetch_word(cpu, mem);
     cpu->indX = read_byte(abs_address, mem);
     printf("\t\tLoaded %d (0x%02X)\n\t\tfrom absolute address (0x%04X) to Index register X\n", 
@@ -240,7 +240,7 @@ void instr_LDX_absolute(cpu_t* cpu, mam_t* mem){
 // LDX oper, Y - absolute, Y
 // Loads from absolute address + Y into X index register
 // Ex. LDX $1234,Y - Laods value from absolute address $1234 + Y into X register
-void instr_LDX_absolute_y(cpu_t* cpu, mam_t* mem){
+void instr_LDX_absolute_y(cpu_t* cpu, mem_t* mem){
     word abs_address = fetch_word(cpu, mem);
     word abs_address_y = abs_address + cpu->indY;
     cpu->indX = read_byte(abs_address_y, mem);
@@ -248,4 +248,134 @@ void instr_LDX_absolute_y(cpu_t* cpu, mam_t* mem){
         cpu->indX, cpu->indX, abs_address, abs_address, cpu->indY, abs_address_y);
     cpu->negative = (cpu->indX & 0x80) != 0;
     cpu->zeroFlag = (cpu->indX == 0); 
+}
+
+// LDY Instructions
+
+// LDY #oper - immediate
+// Loads immediate value into the Y index register
+// Ex. LDY #$42 - Loads 42h i.e. 0x42 into Y register
+void instr_LDY_immediate(cpu_t* cpu, mem_t* mem){
+    cpu->indY = fetch_byte(cpu, mem);
+    printf("\t\tLoaded %d (0x%02X) to Index register Y\n", cpu->indY, cpu->indY);
+    cpu->negative = (cpu->indY & 0x80) != 0;
+    cpu->zeroFlag = (cpu->indY == 0); 
+}
+
+// LDY oper - zero page
+// Loads value from zero page address into the Y index register
+// Ex. LDY $42 - Loads value from zero page address $42 into Y register
+void instr_LDY_zeropage(cpu_t* cpu, mem_t* mem){
+    byte zp_address = fetch_byte(cpu, mem);
+    cpu->indY = read_byte(zp_address, mem);
+    printf("\t\tLoaded %d (0x%02X)\n\t\tfrom zero page address (0x%02X) to Index register Y", 
+        cpu->indY, cpu->indY, zp_address);
+    cpu->negative = (cpu->indY & 0x80) != 0;
+    cpu->zeroFlag = (cpu->indY == 0); 
+}
+
+// LDY oper,X - zero page indexed with X
+// Loads value from zero page address + X into the Y index register
+// Ex. LDY $42,X - Loads value from zero page address ($42 + X) into Y register
+void instr_LDY_zeropage_x(cpu_t* cpu, mem_t* mem){
+    byte zp_address = fetch_byte(cpu, mem);
+    byte zp_address_x = (zp_address + cpu->indX) & 0xFF;
+    cpu->indY = read_byte(zp_address_x, mem);
+    printf("\t\tLoaded %d (0x%02X)\n\t\tfrom zero page address (0x%02X),X\n\t\t(0x%02X + 0x%02X = 0x%02X) to Index register Y\n", 
+        cpu->indY, cpu->indY, zp_address, zp_address, cpu->indX, zp_address_x);
+    cpu->negative = (cpu->indY & 0x80) != 0;
+    cpu->zeroFlag = (cpu->indY == 0); 
+}
+
+// LDY oper - absolute 
+// Loads value from absolute address into the Y index register
+// Ex. LDY $1234 - Loads value from absolute address $1234 into Y register
+void instr_LDY_absolute(cpu_t* cpu, mem_t* mem){
+    word abs_address = fetch_word(cpu, mem);
+    cpu->indY = read_byte(abs_address, mem);
+    printf("\t\tLoaded %d (0x%02X)\n\t\tfrom absolute address (0x%04X) to Index register Y\n", 
+        cpu->indY, cpu->indY, abs_address);
+    cpu->negative = (cpu->indY & 0x80) != 0;
+    cpu->zeroFlag = (cpu->indY == 0); 
+}
+
+// LDY oper,X - absolute indexed with X
+// Loads value from absolute address + X into the Y index register
+// Ex. LDY $1234,X - Loads value from absolute address ($1234 + X) into Y register
+void instr_LDY_absolute_x(cpu_t* cpu, mem_t* mem){
+    word abs_address = fetch_word(cpu, mem);
+    word abs_address_x = abs_address + cpu->indX;
+    cpu->indY = read_byte(abs_address_x, mem);
+    printf("\t\tLoaded %d (0x%02X)\n\t\tfrom absolute address (0x%04X), X\n\t\t(0x%04X + 0x%02X = 0x%04X) to Index register Y\n", 
+        cpu->indY, cpu->indY, abs_address, abs_address, cpu->indX, abs_address_x);
+    cpu->negative = (cpu->indY & 0x80) != 0;
+    cpu->zeroFlag = (cpu->indY == 0); 
+}
+
+// STX Instructions
+
+// STX oper - zero page
+// Stores x index register value to zero page address
+// Ex. STX $42 - Stores x index register value to zero page address $42
+void instr_STX_zeropage(cpu_t* cpu, mem_t* mem){
+    byte zp_address = fetch_byte(cpu, mem);
+    write_byte(zp_address, mem, cpu->indX);
+    printf("\t\tStored %d (0x%02X) to zero page address (0x%02X) from Index register X\n", 
+       cpu->indX, cpu->indX, zp_address);
+    print_memory_address(mem, zp_address);
+}
+
+// STX oper,Y - zero page indexed with Y
+// Stores x index register value to zero page address + Y
+// Ex. STX $42,Y - Stores x index register value to zero page address ($42 + Y)
+void instr_STX_zeropage_y(cpu_t* cpu, mem_t* mem){
+    byte zp_address = fetch_byte(cpu, mem);
+    byte zp_address_y = (zp_address + cpu->indY) & 0xFF;
+    write_byte(zp_address_y, mem, cpu->indX);
+    printf("\t\tStored %d (0x%02X)\n\t\tto zero page address (0x%02X),Y\n\t\t(0x%02X + 0x%02X = 0x%02X) from Index register X\n", 
+        cpu->indX, cpu->indX, zp_address, zp_address, cpu->indY, zp_address_y);
+}
+
+// STX oper - absolute
+// Stores x index register value to absolute address
+// Ex. STX $1234 - Stores x index register value to absolute address $1234
+void instr_STX_absolute(cpu_t* cpu, mem_t* mem){
+    word abs_address = fetch_word(cpu, mem);
+    write_byte(abs_address, mem, cpu->indX);
+    printf("\t\tStored %d (0x%02X)\n\t\tto absolute address (0x%04X) from Index register X\n", 
+        cpu->indX, cpu->indX, abs_address);
+}
+
+// STY Instructions
+
+// STY oper - zero page
+// Stores Y index register value to zero page address
+// Ex. STY $42 - Stores Y index register value to zero page address $42
+void instr_STY_zeropage(cpu_t* cpu, mem_t* mem){
+    byte zp_address = fetch_byte(cpu, mem);
+    write_byte(zp_address, mem, cpu->indY);
+    printf("\t\tStored %d (0x%02X) to zero page address (0x%02X) from Index register Y\n", 
+       cpu->indY, cpu->indY, zp_address);
+    print_memory_address(mem, zp_address);
+}
+
+// STY oper,X - zero page indexed with X
+// Stores Y index register value to zero page address + X
+// Ex. STY $42,X - Stores Y index register value to zero page address ($42 + X)
+void instr_STY_zeropage_x(cpu_t* cpu, mem_t* mem){
+    byte zp_address = fetch_byte(cpu, mem);
+    byte zp_address_x = (zp_address + cpu->indX) & 0xFF;
+    write_byte(zp_address_x, mem, cpu->indY);
+    printf("\t\tStored %d (0x%02X)\n\t\tto zero page address (0x%02X),X\n\t\t(0x%02X + 0x%02X = 0x%02X) from Index register Y\n", 
+        cpu->indY, cpu->indY, zp_address, zp_address, cpu->indX, zp_address_x);
+}
+
+// STY oper - absolute
+// Stores Y index register value to absolute address
+// Ex. STY $1234 - Stores Y index register value to absolute address $1234
+void instr_STY_absolute(cpu_t* cpu, mem_t* mem){
+    word abs_address = fetch_word(cpu, mem);
+    write_byte(abs_address, mem, cpu->indY);
+    printf("\t\tStored %d (0x%02X)\n\t\tto absolute address (0x%04X) from Index register Y\n", 
+        cpu->indY, cpu->indY, abs_address);
 }
