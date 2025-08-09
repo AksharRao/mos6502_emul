@@ -36,23 +36,8 @@ typedef struct{
     byte data[max_mem]; // Memory array of 64KB
 } mem_t;
 
-typedef enum{
-    ADDR_IMPLIED, //Implied as in generally Accumulator
-    ADDR_IMMEDIATE,
-    ADDR_ZEROPAGE, // One cycle less than absolute
-    ADDR_ZEROPAGE_X,
-    ADDR_ABSOLUTE,
-    ADDR_ABSOLUTE_X, // One or two cycles more than absolute
-    ADDR_ABSOLUTE_Y,
-    ADDR_INDIRECT,
-    ADDR_INDIRECT_X,
-    ADDR_INDIRECT_Y,
-    ADDR_RELATIVE
-} addressing_mode_t;
-
 typedef struct {
     const char* name;
-    addressing_mode_t addressing_mode;
     byte cycles;
     void (*execute)(cpu_t* cpu, mem_t* mem);
 } instruction_t;
