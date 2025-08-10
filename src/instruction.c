@@ -1,5 +1,13 @@
 #include "include/instruction.h"
 
+// Index
+// LDA Instructions - Line 11
+// STA Instructions - Line 115
+// LDX Instructions - Line 196
+// LDY Instructions - Line 259
+// STX Instructions - Line 322
+// STY Instructions - Line 356
+
 void instr_BRK(cpu_t* cpu, mem_t* mem){
     cpu->breakFlag = true;
     (void)mem;
@@ -378,4 +386,58 @@ void instr_STY_absolute(cpu_t* cpu, mem_t* mem){
     write_byte(abs_address, mem, cpu->indY);
     printf("\t\tStored %d (0x%02X)\n\t\tto absolute address (0x%04X) from Index register Y\n", 
         cpu->indY, cpu->indY, abs_address);
+}
+
+// TAX implied - Transfer Accumulator to index X
+void instr_TAX_implied(cpu_t* cpu, mem_t* mem){
+    (void)mem; // To get rid of unused variable warning
+    cpu->indX = cpu->acc;
+    printf("\t\tTransfered %d (0x%02X) from Accumulator to Index register X\n", cpu->indX, cpu->indX);
+    cpu->negative = (cpu->indX & 0x80) != 0;
+    cpu->zeroFlag = (cpu->indX == 0); 
+}
+
+// TAY implied - Transfer Accumulator to index Y
+void instr_TAY_implied(cpu_t* cpu, mem_t* mem){
+    (void)mem;
+    cpu->indY = cpu->acc;
+    printf("\t\tTransfered %d (0x%02X) from Accumulator to Index register Y\n", cpu->indY, cpu->indY);
+    cpu->negative = (cpu->indY & 0x80) != 0;
+    cpu->zeroFlag = (cpu->indY == 0); 
+}
+
+// TSX implied - Transfer Stack pointer to index X
+void instr_TSX_implied(cpu_t* cpu, mem_t* mem){
+    (void)mem;
+    cpu->indX = cpu->sp;
+    printf("\t\tTransfered %d (0x%02X) from Stack pointer to Index register X\n", cpu->indX, cpu->indX);
+    cpu->negative = (cpu->indX & 0x80) != 0;
+    cpu->zeroFlag = (cpu->indX == 0); 
+}
+
+// TXA implied - Transfer Index X to Accumulator
+void instr_TXA_implied(cpu_t* cpu, mem_t* mem){
+    (void)mem;
+    cpu->acc = cpu->indX;
+    printf("\t\tTransfered %d (0x%02X) from Index register X to Accumulator\n", cpu->acc, cpu->acc);
+    cpu->negative = (cpu->acc & 0x80) != 0;
+    cpu->zeroFlag = (cpu->acc == 0); 
+}
+
+// TXS implied - Transfer Index X to Stack Pointer
+void instr_TXS_implied(cpu_t* cpu, mem_t* mem){
+    (void)mem;
+    cpu->sp = cpu->indX;
+    printf("\t\tTransfered %d (0x%02X) from Index register X to Stack Pointer\n", cpu->sp, cpu->sp);
+    cpu->negative = (cpu->sp & 0x80) != 0;
+    cpu->zeroFlag = (cpu->sp == 0); 
+}
+
+// TYA implied - Transfer Index Y to accumulator
+void instr_TYA_implied(cpu_t* cpu, mem_t* mem){
+    (void)mem;
+    cpu->acc = cpu->indY;
+    printf("\t\tTransfered %d (0x%02X) from Index register Y to Accumulator\n", cpu->acc, cpu->acc);
+    cpu->negative = (cpu->acc & 0x80) != 0;
+    cpu->zeroFlag = (cpu->acc == 0); 
 }

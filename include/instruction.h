@@ -52,6 +52,14 @@ void instr_STY_zeropage(cpu_t* cpu, mem_t* mem);
 void instr_STY_zeropage_x(cpu_t* cpu, mem_t* mem);
 void instr_STY_absolute(cpu_t* cpu, mem_t* mem);
 
+// Transfer instructions
+void instr_TAX_implied(cpu_t* cpu, mem_t* mem);
+void instr_TAY_implied(cpu_t* cpu, mem_t* mem);
+void instr_TSX_implied(cpu_t* cpu, mem_t* mem);
+void instr_TXA_implied(cpu_t* cpu, mem_t* mem);
+void instr_TXS_implied(cpu_t* cpu, mem_t* mem);
+void instr_TYA_implied(cpu_t* cpu, mem_t* mem);
+
 static instruction_t instruction_table[] = {
     // [opcode] = {"Instruction info", no_of_clock_cycles, function_pointer}
     [0x00] = {"BRK", 7, instr_BRK},
@@ -85,7 +93,13 @@ static instruction_t instruction_table[] = {
     [0x8E] = {"STX oper - absolute", 4, instr_STX_absolute},
     [0x84] = {"STY oper - zeropage", 3, instr_STY_zeropage},
     [0x94] = {"STY oper, X - zeropage, x", 4, instr_STY_zeropage_x},
-    [0x8C] = {"STY oper - absolute", 4, instr_STY_absolute}
+    [0x8C] = {"STY oper - absolute", 4, instr_STY_absolute},
+    [0xAA] = {"TAX - implied", 2, instr_TAX_implied},
+    [0xA8] = {"TAY - implied", 2, instr_TAY_implied},
+    [0xBA] = {"TSX - implied", 2, instr_TSX_implied},
+    [0x8A] = {"TXA - implied", 2, instr_TXA_implied},
+    [0x9A] = {"TXS - implied", 2, instr_TXS_implied},
+    [0x98] = {"TYA - implied", 2, instr_TYA_implied}
 };
 
 #endif
