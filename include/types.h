@@ -17,7 +17,7 @@ typedef uint32_t dword; // shorthand for 32-bit unsigned integer
 typedef struct cpu {
     byte acc; // Accumulator Register A
     byte indX, indY; // Index (Auxiliary) Registers X and Y
-    word sp;   // Stack Pointer (sp)
+    byte sp;   // Stack Pointer (sp)
     word pc; // Program Counter (pc)
 
     //Status Registers

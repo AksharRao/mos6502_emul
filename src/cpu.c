@@ -8,13 +8,13 @@ void cpu_init(cpu_t *cpu){
     cpu->acc = 0;   
     cpu->indX = 0;
     cpu->indY = 0;
-    cpu->sp = 0x0100; // Initialize stack pointer to 0x0100
+    cpu->sp = 0xFD; // Initialize stack pointer to 0xFD
     cpu->pc = 0xFFFC; // Initialize program counter to 0xFFFC
 
     // Initialize status flags
     cpu->negative = false;  
     cpu->overflow = false;
-    cpu->unused = false;
+    cpu->unused = true; //always true
     cpu->breakFlag = false;
     cpu->decimalFlag = false;
     cpu->irqFlag = false;
@@ -23,22 +23,9 @@ void cpu_init(cpu_t *cpu){
 }
 
 // Reset the CPU registers and flags to their initial state
+// i.e. initialize cpu again
 void cpu_reset(cpu_t *cpu){
-    cpu->acc = 0;   
-    cpu->indX = 0;
-    cpu->indY = 0;
-    cpu->sp = 0x0100; // Initialize stack pointer to 0x0100
-    cpu->pc = 0xFFFC; // Initialize program counter to 0xFFFC
-
-    // Initialize status flags
-    cpu->negative = false;  
-    cpu->overflow = false;
-    cpu->unused = false;
-    cpu->breakFlag = false;
-    cpu->decimalFlag = false;
-    cpu->irqFlag = false;
-    cpu->zeroFlag = true; // Set zero flag to true
-    cpu->carryFlag = false; // Set carry flag to false
+    cpu_init(cpu);
 }
 
 // Print the current state of the CPU registers and flags
@@ -100,4 +87,17 @@ void exec_instr(dword *clk_cycle, cpu_t *cpu, mem_t *mem){
         print_memory(mem);
         #endif // DEBUG_MEMORY
     }
+}
+
+byte pack_status_register(cpu_t * cpu){
+    byte packed_sr = 0;
+    packed_sr |= (cpu->negative << 7);
+    packed_sr |= (cpu->overflow << 6);
+    packed_sr |= (cpu->unused << 5);
+    packed_sr |= (cpu->breakFlag << 4);
+    packed_sr |= (cpu->decimalFlag << 3);
+    packed_sr |= (cpu->irqFlag << 2);
+    packed_sr |= (cpu->zeroFlag << 1);
+    packed_sr |= (cpu->carryFlag << 0);
+    return packed_sr;
 }

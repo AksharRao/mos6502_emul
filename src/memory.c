@@ -24,7 +24,8 @@ void print_memory(mem_t *mem) {
 #endif // DEBUG_MEMORY
 
 void print_memory_address(mem_t *mem, word address){
-    printf("\nValue at memory location 0x%04X : %d (0x%02X)\n", address, mem->data[address], mem->data[address]);
+    printf("\nValue at memory location 0x%04X : %d (0x%02X)\n",
+        address, mem->data[address], mem->data[address]);
 }
 
 byte read_byte(dword address, mem_t *mem) {
@@ -54,4 +55,18 @@ void write_byte(dword address, mem_t *mem, byte value) {
     } else {
         printf("Error: Address out of bounds.\n");
     }
+}
+
+void push_stack(cpu_t* cpu, mem_t* mem, byte value){
+    mem->data[0x0100 + cpu->sp] = value;
+    printf("Stack operation - Push:\n\tTOS = 0x0100 + 0x%02X\n\t Value = %d (0x%02X)",
+        cpu->sp, value, value);
+    cpu->sp--; // stack grows down
+}
+
+byte pop_stack(cpu_t* cpu, mem_t* mem){
+    cpu->sp++;
+    printf("Stack operation - Pop:\n\tTOS = 0x0100 + 0x%02X\n\t Value = %d (0x%02X)",
+        cpu->sp, mem->data[0x0100 + cpu->sp], mem->data[0x0100 + cpu->sp]);
+    return mem->data[0x0100 + cpu->sp];
 }

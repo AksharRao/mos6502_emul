@@ -7,6 +7,7 @@
 // LDY Instructions - Line 259
 // STX Instructions - Line 322
 // STY Instructions - Line 356
+// Transfer Instructions - Line 392
 
 void instr_BRK(cpu_t* cpu, mem_t* mem){
     cpu->breakFlag = true;
@@ -20,7 +21,8 @@ void instr_BRK(cpu_t* cpu, mem_t* mem){
 // Ex. LDA #$42 - Loads 42h i.e. 0x42 into accumulator
 void instr_LDA_immediate(cpu_t* cpu, mem_t* mem){
     cpu->acc = fetch_byte(cpu, mem);
-    printf("\t\tLoaded %d (0x%02X) to Accumulator\n", cpu->acc, cpu->acc);
+    printf("\t\tLoaded %d (0x%02X) to Accumulator\n",
+        cpu->acc, cpu->acc);
     cpu->negative = (cpu->acc & 0x80) != 0;
     cpu->zeroFlag = (cpu->acc == 0); 
 }
@@ -388,11 +390,14 @@ void instr_STY_absolute(cpu_t* cpu, mem_t* mem){
         cpu->indY, cpu->indY, abs_address);
 }
 
+// Transfer Instructions
+
 // TAX implied - Transfer Accumulator to index X
 void instr_TAX_implied(cpu_t* cpu, mem_t* mem){
     (void)mem; // To get rid of unused variable warning
     cpu->indX = cpu->acc;
-    printf("\t\tTransfered %d (0x%02X) from Accumulator to Index register X\n", cpu->indX, cpu->indX);
+    printf("\t\tTransfered %d (0x%02X) from Accumulator to Index register X\n",
+        cpu->indX, cpu->indX);
     cpu->negative = (cpu->indX & 0x80) != 0;
     cpu->zeroFlag = (cpu->indX == 0); 
 }
@@ -401,7 +406,8 @@ void instr_TAX_implied(cpu_t* cpu, mem_t* mem){
 void instr_TAY_implied(cpu_t* cpu, mem_t* mem){
     (void)mem;
     cpu->indY = cpu->acc;
-    printf("\t\tTransfered %d (0x%02X) from Accumulator to Index register Y\n", cpu->indY, cpu->indY);
+    printf("\t\tTransfered %d (0x%02X) from Accumulator to Index register Y\n",
+        cpu->indY, cpu->indY);
     cpu->negative = (cpu->indY & 0x80) != 0;
     cpu->zeroFlag = (cpu->indY == 0); 
 }
@@ -410,7 +416,8 @@ void instr_TAY_implied(cpu_t* cpu, mem_t* mem){
 void instr_TSX_implied(cpu_t* cpu, mem_t* mem){
     (void)mem;
     cpu->indX = cpu->sp;
-    printf("\t\tTransfered %d (0x%02X) from Stack pointer to Index register X\n", cpu->indX, cpu->indX);
+    printf("\t\tTransfered %d (0x%02X) from Stack pointer to Index register X\n",
+        cpu->indX, cpu->indX);
     cpu->negative = (cpu->indX & 0x80) != 0;
     cpu->zeroFlag = (cpu->indX == 0); 
 }
@@ -419,7 +426,8 @@ void instr_TSX_implied(cpu_t* cpu, mem_t* mem){
 void instr_TXA_implied(cpu_t* cpu, mem_t* mem){
     (void)mem;
     cpu->acc = cpu->indX;
-    printf("\t\tTransfered %d (0x%02X) from Index register X to Accumulator\n", cpu->acc, cpu->acc);
+    printf("\t\tTransfered %d (0x%02X) from Index register X to Accumulator\n",
+        cpu->acc, cpu->acc);
     cpu->negative = (cpu->acc & 0x80) != 0;
     cpu->zeroFlag = (cpu->acc == 0); 
 }
@@ -428,7 +436,8 @@ void instr_TXA_implied(cpu_t* cpu, mem_t* mem){
 void instr_TXS_implied(cpu_t* cpu, mem_t* mem){
     (void)mem;
     cpu->sp = cpu->indX;
-    printf("\t\tTransfered %d (0x%02X) from Index register X to Stack Pointer\n", cpu->sp, cpu->sp);
+    printf("\t\tTransfered %d (0x%02X) from Index register X to Stack Pointer\n",
+        cpu->sp, cpu->sp);
     cpu->negative = (cpu->sp & 0x80) != 0;
     cpu->zeroFlag = (cpu->sp == 0); 
 }
@@ -437,7 +446,47 @@ void instr_TXS_implied(cpu_t* cpu, mem_t* mem){
 void instr_TYA_implied(cpu_t* cpu, mem_t* mem){
     (void)mem;
     cpu->acc = cpu->indY;
-    printf("\t\tTransfered %d (0x%02X) from Index register Y to Accumulator\n", cpu->acc, cpu->acc);
+    printf("\t\tTransfered %d (0x%02X) from Index register Y to Accumulator\n",
+        cpu->acc, cpu->acc);
     cpu->negative = (cpu->acc & 0x80) != 0;
     cpu->zeroFlag = (cpu->acc == 0); 
+}
+
+// PHA implied - Push accumulator onto stack
+void instr_PHA_implied(cpu_t* cpu, mem_t* mem){
+    push_stack(cpu, mem, cpu->acc);
+    printf("\t\tPushed %d (0x%02X) from Accumulator on to the Stack\n",
+        cpu->acc, cpu->acc);
+}
+
+// PHP implied - Push Status Register onto stack
+void instr_PHP_implied(cpu_t* cpu, mem_t* mem){
+    byte packed_sr = pack_status_register(cpu);
+    packed_sr |= (1 << 4); // Set break flag
+    push_stack(cpu, mem, packed_sr);
+    printf("\t\tPushed %d (0x%02X) from Status Register on to the Stack\n",
+        packed_sr, packed_sr);
+}
+
+// PLA implied - Pull accumulator from stack
+void instr_PLA_implied(cpu_t* cpu, mem_t* mem){
+    cpu->acc = pop_stack(cpu, mem);
+    printf("\t\tPopped %d (0x%02X) from Stack to Accumulator\n",
+        cpu->acc, cpu->acc);
+    cpu->negative = (cpu->acc & 0x80) != 0;
+    cpu->zeroFlag = (cpu->acc == 0); 
+}
+
+void instr_PLP_implied(cpu_t* cpu, mem_t* mem){
+    byte packed_sr = pop_stack(cpu, mem);
+    // Unused and Break flag are to be ignored
+    cpu->negative = (packed_sr >> 7) & 1;   
+    cpu->overflow = (packed_sr >> 6) & 1;   
+    cpu->decimalFlag = (packed_sr >> 3) & 1;
+    cpu->irqFlag = (packed_sr >> 2) & 1;    
+    cpu->zeroFlag = (packed_sr >> 1) & 1;   
+    cpu->carryFlag = packed_sr & 1;
+    
+    printf("\t\tPopped %d (0x%02X) from Stack to Status Register\n",
+        packed_sr, packed_sr);
 }

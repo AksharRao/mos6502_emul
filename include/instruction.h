@@ -60,6 +60,12 @@ void instr_TXA_implied(cpu_t* cpu, mem_t* mem);
 void instr_TXS_implied(cpu_t* cpu, mem_t* mem);
 void instr_TYA_implied(cpu_t* cpu, mem_t* mem);
 
+// Stack Instructions
+void instr_PHA_implied(cpu_t* cpu, mem_t* mem);
+void instr_PHP_implied(cpu_t* cpu, mem_t* mem);
+void instr_PLA_implied(cpu_t* cpu, mem_t* mem);
+void instr_PLP_implied(cpu_t* cpu, mem_t* mem);
+
 static instruction_t instruction_table[] = {
     // [opcode] = {"Instruction info", no_of_clock_cycles, function_pointer}
     [0x00] = {"BRK", 7, instr_BRK},
@@ -99,7 +105,11 @@ static instruction_t instruction_table[] = {
     [0xBA] = {"TSX - implied", 2, instr_TSX_implied},
     [0x8A] = {"TXA - implied", 2, instr_TXA_implied},
     [0x9A] = {"TXS - implied", 2, instr_TXS_implied},
-    [0x98] = {"TYA - implied", 2, instr_TYA_implied}
+    [0x98] = {"TYA - implied", 2, instr_TYA_implied},
+    [0x48] = {"PHA - implied", 3, instr_PHA_implied},
+    [0x08] = {"PHP - implied", 3, instr_PHP_implied},
+    [0x68] = {"PLA - implied", 4, instr_PLA_implied},
+    [0x28] = {"PLP - implied", 4, instr_PLP_implied}
 };
 
 #endif
