@@ -1,0 +1,370 @@
+clang -std=c17 -Wall -Wextra -Werror src/main.c src/cpu.c src/memory.c src/instruction.c -I. -o build/m6502
+./build/m6502
+
+CPU State:
+Accumulator: 0
+Index X: 0	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: FFFC
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 1
+Carry Flag: 0
+
+Memory initialized to 0.
+Executing: LDA #oper - immediate (0xA9) - 2 cycles
+		Loaded 66 (0x42) to Accumulator
+
+CPU State:
+Accumulator: 66
+Index X: 5	Index Y: 3
+Stack Pointer: 00FD
+Program Counter: FFFE
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: STA oper - zeropage (0x85) - 3 cycles
+		Stored 66 (0x42) to zero page address (0x80) from Accumulator
+
+Value at memory location 0x0080 : 66 (0x42)
+
+CPU State:
+Accumulator: 66
+Index X: 5	Index Y: 3
+Stack Pointer: 00FD
+Program Counter: 0000
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDX #oper - immediate (0xA2) - 2 cycles
+		Loaded 5 (0x05) to Index register X
+
+CPU State:
+Accumulator: 66
+Index X: 5	Index Y: 3
+Stack Pointer: 00FD
+Program Counter: 0002
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDA #oper - immediate (0xA9) - 2 cycles
+		Loaded 136 (0x88) to Accumulator
+
+CPU State:
+Accumulator: 136
+Index X: 5	Index Y: 3
+Stack Pointer: 00FD
+Program Counter: 0004
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: STA oper, X - zeropage, x (0x95) - 4 cycles
+		Stored 136 (0x88)
+		to zero page address (0x40),X
+		(0x40 + 0x05 = 0x45) from Accumulator
+
+CPU State:
+Accumulator: 136
+Index X: 5	Index Y: 3
+Stack Pointer: 00FD
+Program Counter: 0006
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDA #oper - immediate (0xA9) - 2 cycles
+		Loaded 153 (0x99) to Accumulator
+
+CPU State:
+Accumulator: 153
+Index X: 5	Index Y: 3
+Stack Pointer: 00FD
+Program Counter: 0008
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: STA oper - absolute (0x8D) - 4 cycles
+		Stored 153 (0x99)
+		to absolute address (0x3000) from Accumulator
+
+CPU State:
+Accumulator: 153
+Index X: 5	Index Y: 3
+Stack Pointer: 00FD
+Program Counter: 000B
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDA #oper - immediate (0xA9) - 2 cycles
+		Loaded 170 (0xAA) to Accumulator
+
+CPU State:
+Accumulator: 170
+Index X: 5	Index Y: 3
+Stack Pointer: 00FD
+Program Counter: 000D
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: STA oper, X - absolute, x (0x9D) - 5 cycles
+		Stored 170 (0xAA)
+		to absolute address (0x4000), X
+		(0x4000 + 0x05 = 0x4005) from Accumulator
+
+CPU State:
+Accumulator: 170
+Index X: 5	Index Y: 3
+Stack Pointer: 00FD
+Program Counter: 0010
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDY #oper - immediate (0xA0) - 2 cycles
+		Loaded 8 (0x08) to Index register Y
+
+CPU State:
+Accumulator: 170
+Index X: 5	Index Y: 8
+Stack Pointer: 00FD
+Program Counter: 0012
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDA #oper - immediate (0xA9) - 2 cycles
+		Loaded 187 (0xBB) to Accumulator
+
+CPU State:
+Accumulator: 187
+Index X: 5	Index Y: 8
+Stack Pointer: 00FD
+Program Counter: 0014
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: STA oper, Y - absolute, y (0x99) - 5 cycles
+		Stored 187 (0xBB)
+		to absolute address (0x5000), Y
+		(0x5000 + 0x08 = 0x5008) from Accumulator
+
+CPU State:
+Accumulator: 187
+Index X: 5	Index Y: 8
+Stack Pointer: 00FD
+Program Counter: 0017
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDA #oper - immediate (0xA9) - 2 cycles
+		Loaded 204 (0xCC) to Accumulator
+
+CPU State:
+Accumulator: 204
+Index X: 5	Index Y: 8
+Stack Pointer: 00FD
+Program Counter: 0019
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: STA (oper, X) - indirect, x (0x81) - 6 cycles
+		Stored 204 (0xCC) to ($20,X)
+		($20 + $05 = $25) -> $6000 from Accumulator
+
+CPU State:
+Accumulator: 204
+Index X: 5	Index Y: 8
+Stack Pointer: 00FD
+Program Counter: 001B
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDA #oper - immediate (0xA9) - 2 cycles
+		Loaded 221 (0xDD) to Accumulator
+
+CPU State:
+Accumulator: 221
+Index X: 5	Index Y: 8
+Stack Pointer: 00FD
+Program Counter: 001D
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: STA (oper), X - indirect, y (0x91) - 6 cycles
+		Stored 221 (0xDD) to ($30),Y
+		($7000 + $08 = $7008) from Accumulator
+
+CPU State:
+Accumulator: 221
+Index X: 5	Index Y: 8
+Stack Pointer: 00FD
+Program Counter: 001F
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: BRK (0x00) - 7 cycles
+
+CPU State:
+Accumulator: 221
+Index X: 5	Index Y: 8
+Stack Pointer: 00FD
+Program Counter: 0020
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 1
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+
+CPU State:
+Accumulator: 221
+Index X: 5	Index Y: 8
+Stack Pointer: 00FD
+Program Counter: 0020
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 1
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+

@@ -15,11 +15,8 @@ int main(){
     #ifdef DEBUG_MEMORY
     print_memory(&mem);
     #endif // DEBUG_MEMORY
-    
-    cpu.indX = 0x05; // value at x index register
-    cpu.indY = 0x03; // value at y index register
 
-    #include "include/code/sta_code.h"
+    #include "include/tests/stack_test.h"
 
     exec_instr(&clk_cycle, &cpu, &mem);
     print_cpu_state(&cpu);

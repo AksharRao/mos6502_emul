@@ -1,0 +1,217 @@
+clang -std=c17 -Wall -Wextra -Werror src/main.c src/cpu.c src/memory.c src/instruction.c -I. -o build/m6502
+./build/m6502
+
+CPU State:
+Accumulator: 0
+Index X: 0	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: FFFC
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 1
+Carry Flag: 0
+
+Memory initialized to 0.
+Executing: LDX #oper - immediate (0xA2) - 2 cycles
+		Loaded 66 (0x42) to Index register X
+
+CPU State:
+Accumulator: 0
+Index X: 66	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: FFFE
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDY #oper - immediate (0xA0) - 2 cycles
+		Loaded 136 (0x88) to Index register Y
+
+CPU State:
+Accumulator: 0
+Index X: 66	Index Y: 136
+Stack Pointer: 00FD
+Program Counter: 0000
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: STX oper - zeropage (0x86) - 3 cycles
+		Stored 66 (0x42) to zero page address (0x20) from Index register X
+
+Value at memory location 0x0020 : 66 (0x42)
+
+CPU State:
+Accumulator: 0
+Index X: 66	Index Y: 136
+Stack Pointer: 00FD
+Program Counter: 0002
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: STX oper, Y - zeropage, y (0x96) - 4 cycles
+		Stored 66 (0x42)
+		to zero page address (0x30),Y
+		(0x30 + 0x88 = 0xB8) from Index register X
+
+CPU State:
+Accumulator: 0
+Index X: 66	Index Y: 136
+Stack Pointer: 00FD
+Program Counter: 0004
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: STX oper - absolute (0x8E) - 4 cycles
+		Stored 66 (0x42)
+		to absolute address (0x4000) from Index register X
+
+CPU State:
+Accumulator: 0
+Index X: 66	Index Y: 136
+Stack Pointer: 00FD
+Program Counter: 0007
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: STY oper - zeropage (0x84) - 3 cycles
+		Stored 136 (0x88) to zero page address (0x25) from Index register Y
+
+Value at memory location 0x0025 : 136 (0x88)
+
+CPU State:
+Accumulator: 0
+Index X: 66	Index Y: 136
+Stack Pointer: 00FD
+Program Counter: 0009
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: STY oper, X - zeropage, x (0x94) - 4 cycles
+		Stored 136 (0x88)
+		to zero page address (0x35),X
+		(0x35 + 0x42 = 0x77) from Index register Y
+
+CPU State:
+Accumulator: 0
+Index X: 66	Index Y: 136
+Stack Pointer: 00FD
+Program Counter: 000B
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: STY oper - absolute (0x8C) - 4 cycles
+		Stored 136 (0x88)
+		to absolute address (0x5000) from Index register Y
+
+CPU State:
+Accumulator: 0
+Index X: 66	Index Y: 136
+Stack Pointer: 00FD
+Program Counter: 000E
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: BRK (0x00) - 7 cycles
+
+CPU State:
+Accumulator: 0
+Index X: 66	Index Y: 136
+Stack Pointer: 00FD
+Program Counter: 000F
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 1
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+
+CPU State:
+Accumulator: 0
+Index X: 66	Index Y: 136
+Stack Pointer: 00FD
+Program Counter: 000F
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 1
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+

@@ -1,0 +1,257 @@
+clang -std=c17 -Wall -Wextra -Werror src/main.c src/cpu.c src/memory.c src/instruction.c -I. -o build/m6502
+./build/m6502
+
+CPU State:
+Accumulator: 0
+Index X: 0	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: FFFC
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 1
+Carry Flag: 0
+
+Memory initialized to 0.
+Executing: LDA #oper - immediate (0xA9) - 2 cycles
+		Loaded 66 (0x42) to Accumulator
+
+CPU State:
+Accumulator: 66
+Index X: 0	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: FFFE
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDX #oper - immediate (0xA2) - 2 cycles
+		Loaded 136 (0x88) to Index register X
+
+CPU State:
+Accumulator: 66
+Index X: 136	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: 0000
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: PHA - implied (0x48) - 3 cycles
+Stack operation - Push:
+	TOS = 0x0100 + 0xFD
+	 Value = 66 (0x42)		Pushed 66 (0x42) from Accumulator on to the Stack
+
+CPU State:
+Accumulator: 66
+Index X: 136	Index Y: 0
+Stack Pointer: 00FC
+Program Counter: 0001
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: PHP - implied (0x08) - 3 cycles
+Stack operation - Push:
+	TOS = 0x0100 + 0xFC
+	 Value = 176 (0xB0)		Pushed 176 (0xB0) from Status Register on to the Stack
+
+CPU State:
+Accumulator: 66
+Index X: 136	Index Y: 0
+Stack Pointer: 00FB
+Program Counter: 0002
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDA #oper - immediate (0xA9) - 2 cycles
+		Loaded 153 (0x99) to Accumulator
+
+CPU State:
+Accumulator: 153
+Index X: 136	Index Y: 0
+Stack Pointer: 00FB
+Program Counter: 0004
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: PLA - implied (0x68) - 4 cycles
+Stack operation - Pop:
+	TOS = 0x0100 + 0xFC
+	 Value = 176 (0xB0)		Popped 176 (0xB0) from Stack to Accumulator
+
+CPU State:
+Accumulator: 176
+Index X: 136	Index Y: 0
+Stack Pointer: 00FC
+Program Counter: 0005
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: PLA - implied (0x68) - 4 cycles
+Stack operation - Pop:
+	TOS = 0x0100 + 0xFD
+	 Value = 66 (0x42)		Popped 66 (0x42) from Stack to Accumulator
+
+CPU State:
+Accumulator: 66
+Index X: 136	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: 0006
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: PHP - implied (0x08) - 3 cycles
+Stack operation - Push:
+	TOS = 0x0100 + 0xFD
+	 Value = 48 (0x30)		Pushed 48 (0x30) from Status Register on to the Stack
+
+CPU State:
+Accumulator: 66
+Index X: 136	Index Y: 0
+Stack Pointer: 00FC
+Program Counter: 0007
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDA #oper - immediate (0xA9) - 2 cycles
+		Loaded 0 (0x00) to Accumulator
+
+CPU State:
+Accumulator: 0
+Index X: 136	Index Y: 0
+Stack Pointer: 00FC
+Program Counter: 0009
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 1
+Carry Flag: 0
+
+Executing: PLP - implied (0x28) - 4 cycles
+Stack operation - Pop:
+	TOS = 0x0100 + 0xFD
+	 Value = 48 (0x30)		Popped 48 (0x30) from Stack to Status Register
+
+CPU State:
+Accumulator: 0
+Index X: 136	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: 000A
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: BRK (0x00) - 7 cycles
+
+CPU State:
+Accumulator: 0
+Index X: 136	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: 000B
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 1
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+
+CPU State:
+Accumulator: 0
+Index X: 136	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: 000B
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 1
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+

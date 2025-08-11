@@ -1,0 +1,174 @@
+clang -std=c17 -Wall -Wextra -Werror src/main.c src/cpu.c src/memory.c src/instruction.c -I. -o build/m6502
+./build/m6502
+
+CPU State:
+Accumulator: 0
+Index X: 0	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: FFFC
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 1
+Carry Flag: 0
+
+Memory initialized to 0.
+Executing: LDX #oper - immediate (0xA2) - 2 cycles
+		Loaded 66 (0x42) to Index register X
+
+CPU State:
+Accumulator: 0
+Index X: 66	Index Y: 3
+Stack Pointer: 00FD
+Program Counter: FFFE
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDX oper - zeropage (0xA6) - 3 cycles
+		Loaded 105 (0x69)
+		from zero page address (0x80) to Index register X
+CPU State:
+Accumulator: 0
+Index X: 105	Index Y: 3
+Stack Pointer: 00FD
+Program Counter: 0000
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDY #oper - immediate (0xA0) - 2 cycles
+		Loaded 5 (0x05) to Index register Y
+
+CPU State:
+Accumulator: 0
+Index X: 105	Index Y: 5
+Stack Pointer: 00FD
+Program Counter: 0002
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDX oper, Y - zeropage, y (0xB6) - 4 cycles
+		Loaded 153 (0x99)
+		from zero page address (0x40),Y
+		(0x40 + 0x05 = 0x45) to Index register X
+
+CPU State:
+Accumulator: 0
+Index X: 153	Index Y: 5
+Stack Pointer: 00FD
+Program Counter: 0004
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDX oper - absolute (0xAE) - 4 cycles
+		Loaded 136 (0x88)
+		from absolute address (0x1234) to Index register X
+
+CPU State:
+Accumulator: 0
+Index X: 136	Index Y: 5
+Stack Pointer: 00FD
+Program Counter: 0007
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDX oper, Y - absolute, y (0xBE) - 4 cycles
+		Loaded 170 (0xAA)
+		from absolute address (0x5678), Y
+		(0x5678 + 0x05 = 0x567D) to Index register X
+
+CPU State:
+Accumulator: 0
+Index X: 170	Index Y: 5
+Stack Pointer: 00FD
+Program Counter: 000A
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: BRK (0x00) - 7 cycles
+
+CPU State:
+Accumulator: 0
+Index X: 170	Index Y: 5
+Stack Pointer: 00FD
+Program Counter: 000B
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 1
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+
+CPU State:
+Accumulator: 0
+Index X: 170	Index Y: 5
+Stack Pointer: 00FD
+Program Counter: 000B
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 1
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+

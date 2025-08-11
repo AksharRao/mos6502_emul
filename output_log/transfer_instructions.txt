@@ -1,0 +1,283 @@
+clang -std=c17 -Wall -Wextra -Werror src/main.c src/cpu.c src/memory.c src/instruction.c -I. -o build/m6502
+./build/m6502
+
+CPU State:
+Accumulator: 0
+Index X: 0	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: FFFC
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 1
+Carry Flag: 0
+
+Memory initialized to 0.
+Executing: LDA #oper - immediate (0xA9) - 2 cycles
+		Loaded 153 (0x99) to Accumulator
+
+CPU State:
+Accumulator: 153
+Index X: 0	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: FFFE
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDX #oper - immediate (0xA2) - 2 cycles
+		Loaded 0 (0x00) to Index register X
+
+CPU State:
+Accumulator: 153
+Index X: 0	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: 0000
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 1
+Carry Flag: 0
+
+Executing: LDY #oper - immediate (0xA0) - 2 cycles
+		Loaded 127 (0x7F) to Index register Y
+
+CPU State:
+Accumulator: 153
+Index X: 0	Index Y: 127
+Stack Pointer: 00FD
+Program Counter: 0002
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: TAX - implied (0xAA) - 2 cycles
+		Transfered 153 (0x99) from Accumulator to Index register X
+
+CPU State:
+Accumulator: 153
+Index X: 153	Index Y: 127
+Stack Pointer: 00FD
+Program Counter: 0003
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: TAY - implied (0xA8) - 2 cycles
+		Transfered 153 (0x99) from Accumulator to Index register Y
+
+CPU State:
+Accumulator: 153
+Index X: 153	Index Y: 153
+Stack Pointer: 00FD
+Program Counter: 0004
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: TXA - implied (0x8A) - 2 cycles
+		Transfered 153 (0x99) from Index register X to Accumulator
+
+CPU State:
+Accumulator: 153
+Index X: 153	Index Y: 153
+Stack Pointer: 00FD
+Program Counter: 0005
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: TYA - implied (0x98) - 2 cycles
+		Transfered 153 (0x99) from Index register Y to Accumulator
+
+CPU State:
+Accumulator: 153
+Index X: 153	Index Y: 153
+Stack Pointer: 00FD
+Program Counter: 0006
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: TSX - implied (0xBA) - 2 cycles
+		Transfered 253 (0xFD) from Stack pointer to Index register X
+
+CPU State:
+Accumulator: 153
+Index X: 253	Index Y: 153
+Stack Pointer: 00FD
+Program Counter: 0007
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: TXS - implied (0x9A) - 2 cycles
+		Transfered 253 (0xFD) from Index register X to Stack Pointer
+
+CPU State:
+Accumulator: 153
+Index X: 253	Index Y: 153
+Stack Pointer: 00FD
+Program Counter: 0008
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDA #oper - immediate (0xA9) - 2 cycles
+		Loaded 0 (0x00) to Accumulator
+
+CPU State:
+Accumulator: 0
+Index X: 253	Index Y: 153
+Stack Pointer: 00FD
+Program Counter: 000A
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 1
+Carry Flag: 0
+
+Executing: TAX - implied (0xAA) - 2 cycles
+		Transfered 0 (0x00) from Accumulator to Index register X
+
+CPU State:
+Accumulator: 0
+Index X: 0	Index Y: 153
+Stack Pointer: 00FD
+Program Counter: 000B
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 1
+Carry Flag: 0
+
+Executing: TAY - implied (0xA8) - 2 cycles
+		Transfered 0 (0x00) from Accumulator to Index register Y
+
+CPU State:
+Accumulator: 0
+Index X: 0	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: 000C
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 1
+Carry Flag: 0
+
+Executing: BRK (0x00) - 7 cycles
+
+CPU State:
+Accumulator: 0
+Index X: 0	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: 000D
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 1
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 1
+Carry Flag: 0
+
+
+CPU State:
+Accumulator: 0
+Index X: 0	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: 000D
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 1
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 1
+Carry Flag: 0
+
