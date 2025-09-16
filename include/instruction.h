@@ -82,6 +82,53 @@ void instr_INC_absolute_x(cpu_t* cpu, mem_t* mem);
 void instr_INX_implied(cpu_t* cpu, mem_t* mem);
 void instr_INY_implied(cpu_t* cpu, mem_t* mem);
 
+// Arithemetic instructions
+void instr_ADC_immediate(cpu_t* cpu, mem_t* mem);
+void instr_ADC_zeropage(cpu_t* cpu, mem_t* mem);
+void instr_ADC_zeropage_x(cpu_t* cpu, mem_t* mem);
+void instr_ADC_absolute(cpu_t* cpu, mem_t* mem);
+void instr_ADC_absolute_x(cpu_t* cpu, mem_t* mem);
+void instr_ADC_absolute_y(cpu_t* cpu, mem_t* mem);
+void instr_ADC_indirect_x(cpu_t* cpu, mem_t* mem);
+void instr_ADC_indirect_y(cpu_t* cpu, mem_t* mem);
+
+void instr_SBC_immediate(cpu_t* cpu, mem_t* mem);
+void instr_SBC_zeropage(cpu_t* cpu, mem_t* mem);
+void instr_SBC_zeropage_x(cpu_t* cpu, mem_t* mem);
+void instr_SBC_absolute(cpu_t* cpu, mem_t* mem);
+void instr_SBC_absolute_x(cpu_t* cpu, mem_t* mem);
+void instr_SBC_absolute_y(cpu_t* cpu, mem_t* mem);
+void instr_SBC_indirect_x(cpu_t* cpu, mem_t* mem);
+void instr_SBC_indirect_y(cpu_t* cpu, mem_t* mem);
+
+// Logical instructions
+void instr_AND_immediate(cpu_t* cpu, mem_t* mem);
+void instr_AND_zeropage(cpu_t* cpu, mem_t* mem);
+void instr_AND_zeropage_x(cpu_t* cpu, mem_t* mem);
+void instr_AND_absolute(cpu_t* cpu, mem_t* mem);
+void instr_AND_absolute_x(cpu_t* cpu, mem_t* mem);
+void instr_AND_absolute_y(cpu_t* cpu, mem_t* mem);
+void instr_AND_indirect_x(cpu_t* cpu, mem_t* mem);
+void instr_AND_indirect_y(cpu_t* cpu, mem_t* mem);
+
+void instr_EOR_immediate(cpu_t* cpu, mem_t* mem);
+void instr_EOR_zeropage(cpu_t* cpu, mem_t* mem);
+void instr_EOR_zeropage_x(cpu_t* cpu, mem_t* mem);
+void instr_EOR_absolute(cpu_t* cpu, mem_t* mem);
+void instr_EOR_absolute_x(cpu_t* cpu, mem_t* mem);
+void instr_EOR_absolute_y(cpu_t* cpu, mem_t* mem);
+void instr_EOR_indirect_x(cpu_t* cpu, mem_t* mem);
+void instr_EOR_indirect_y(cpu_t* cpu, mem_t* mem);
+
+void instr_ORA_immediate(cpu_t* cpu, mem_t* mem);
+void instr_ORA_zeropage(cpu_t* cpu, mem_t* mem);
+void instr_ORA_zeropage_x(cpu_t* cpu, mem_t* mem);
+void instr_ORA_absolute(cpu_t* cpu, mem_t* mem);
+void instr_ORA_absolute_x(cpu_t* cpu, mem_t* mem);
+void instr_ORA_absolute_y(cpu_t* cpu, mem_t* mem);
+void instr_ORA_indirect_x(cpu_t* cpu, mem_t* mem);
+void instr_ORA_indirect_y(cpu_t* cpu, mem_t* mem);
+
 static instruction_t instruction_table[] = {
     // [opcode] = {"Instruction info", no_of_clock_cycles, function_pointer}
     [0x00] = {"BRK", 7, instr_BRK},
@@ -138,6 +185,46 @@ static instruction_t instruction_table[] = {
     [0xFE] = {"INC oper, X - absolute, x", 7, instr_INC_absolute_x},
     [0xE8] = {"INX - implied", 2, instr_INX_implied},
     [0xC8] = {"INY - implied", 2, instr_INY_implied},
+    [0x69] = {"ADC #oper - immediate", 2, instr_ADC_immediate},
+    [0x65] = {"ADC oper - zeropage", 3, instr_ADC_zeropage},
+    [0x75] = {"ADC oper, X - zeropage, x", 4, instr_ADC_zeropage_x},
+    [0x6D] = {"ADC oper - absolute", 4, instr_ADC_absolute},
+    [0x7D] = {"ADC oper, X - absolute, x", 4, instr_ADC_absolute_x},
+    [0x79] = {"ADC oper, Y - apsolute, y", 4, instr_ADC_absolute_y},
+    [0x61] = {"ADC (oper, X) - indirect, x", 6, instr_ADC_indirect_x},
+    [0x71] = {"ADC (oper), Y - indirect, y", 5, instr_ADC_indirect_y},
+    [0xE9] = {"SBC #oper - immediate", 2, instr_SBC_immediate},
+    [0xE5] = {"SBC oper - zeropage", 3, instr_SBC_zeropage},
+    [0xF5] = {"SBC oper, X - zeropage, x", 4, instr_SBC_zeropage_x},
+    [0xED] = {"SBC oper - absolute", 4, instr_SBC_absolute},
+    [0xFD] = {"SBC oper, X - absolute, x", 4, instr_SBC_absolute_x},
+    [0xF9] = {"SBC oper, Y - absolute, y", 4, instr_SBC_absolute_y},
+    [0xE1] = {"SBC (oper, X) - indirect, x", 6, instr_SBC_indirect_x},
+    [0xF1] = {"SBC (oper), Y - indirect, y", 5, instr_SBC_indirect_y},
+    [0x29] = {"AND #oper - immediate", 2, instr_AND_immediate},
+    [0x25] = {"AND oper - zeropage", 3, instr_AND_zeropage},
+    [0x35] = {"AND oper, X - zeropage, x", 4, instr_AND_zeropage_x},
+    [0x2D] = {"AND oper - absolute", 4, instr_AND_absolute},
+    [0x3D] = {"AND oper, X - absolute, x", 4, instr_AND_absolute_x},
+    [0x39] = {"AND oper, Y - absolute, y", 4, instr_AND_absolute_y},
+    [0x21] = {"AND (oper, X) - indirect, x", 6, instr_AND_indirect_x},
+    [0x31] = {"AND (oper), Y - indirect, y", 5, instr_AND_indirect_y},
+    [0x49] = {"EOR #oper - immediate", 2, instr_EOR_immediate},
+    [0x45] = {"EOR oper - zeropage", 3, instr_EOR_zeropage},
+    [0x55] = {"EOR oper, X - zeropage, x", 4, instr_EOR_zeropage_x},
+    [0x4D] = {"EOR oper - absolute", 4, instr_EOR_absolute},
+    [0x5D] = {"EOR oper, X - absolute, x", 4, instr_EOR_absolute_x},
+    [0x59] = {"EOR oper, Y - absolute, y", 4, instr_EOR_absolute_y},
+    [0x41] = {"EOR (oper, X) - indirect, x", 6, instr_EOR_indirect_x},
+    [0x51] = {"EOR (oper), Y - indirect, y", 5, instr_EOR_indirect_y},
+    [0x09] = {"ORA #oper - immediate", 2, instr_ORA_immediate},
+    [0x05] = {"ORA oper - zeropage", 3, instr_ORA_zeropage},
+    [0x15] = {"ORA oper, X - zeropage, x", 4, instr_ORA_zeropage_x},
+    [0x0D] = {"ORA oper - absolute", 4, instr_ORA_absolute},
+    [0x1D] = {"ORA oper, X - absolute, x", 4, instr_ORA_absolute_x},
+    [0x19] = {"ORA oper, Y - absolute, y", 4, instr_ORA_absolute_y},
+    [0x01] = {"ORA (oper, X) - indirect, x", 6, instr_ORA_indirect_x},
+    [0x11] = {"ORA (oper), Y - indirect, y", 5, instr_ORA_indirect_y}
 };
 
 #endif
