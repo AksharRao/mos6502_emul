@@ -1,0 +1,319 @@
+
+CPU State:
+Accumulator: 0
+Index X: 0	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: FFFC
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 1
+Carry Flag: 0
+
+Memory initialized to 0.
+Executing: LDX #oper - immediate (0xA2) - 2 cycles
+		Loaded 126 (0x7E) to Index register X
+
+CPU State:
+Accumulator: 0
+Index X: 126	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: FFFE
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: INX - implied (0xE8) - 2 cycles
+		Incremented Index X by 1, Index X = (0x7F)
+
+CPU State:
+Accumulator: 0
+Index X: 127	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: FFFF
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDX #oper - immediate (0xA2) - 2 cycles
+		Loaded 255 (0xFF) to Index register X
+
+CPU State:
+Accumulator: 0
+Index X: 255	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: 0001
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: INX - implied (0xE8) - 2 cycles
+		Incremented Index X by 1, Index X = (0x00)
+
+CPU State:
+Accumulator: 0
+Index X: 0	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: 0002
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 1
+Carry Flag: 0
+
+Executing: LDY #oper - immediate (0xA0) - 2 cycles
+		Loaded 127 (0x7F) to Index register Y
+
+CPU State:
+Accumulator: 0
+Index X: 0	Index Y: 127
+Stack Pointer: 00FD
+Program Counter: 0004
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: INY - implied (0xC8) - 2 cycles
+		Incremented Index Y by 1, Index Y = (0x80)
+
+CPU State:
+Accumulator: 0
+Index X: 0	Index Y: 128
+Stack Pointer: 00FD
+Program Counter: 0005
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDY #oper - immediate (0xA0) - 2 cycles
+		Loaded 255 (0xFF) to Index register Y
+
+CPU State:
+Accumulator: 0
+Index X: 0	Index Y: 255
+Stack Pointer: 00FD
+Program Counter: 0007
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: INY - implied (0xC8) - 2 cycles
+		Incremented Index Y by 1, Index Y = (0x00)
+
+CPU State:
+Accumulator: 0
+Index X: 0	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: 0008
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 1
+Carry Flag: 0
+
+Executing: INC oper - zeropage (0xE6) - 5 cycles
+		Incremented 1 at zero page address (0x80)
+
+CPU State:
+Accumulator: 0
+Index X: 0	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: 000A
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: LDX #oper - immediate (0xA2) - 2 cycles
+		Loaded 5 (0x05) to Index register X
+
+CPU State:
+Accumulator: 0
+Index X: 5	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: 000C
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: INC oper, X - zeropage, x (0xF6) - 6 cycles
+		Incremented 1 at zero page address (0x80) + Index X (0x05)
+
+CPU State:
+Accumulator: 0
+Index X: 5	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: 000E
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: INC oper, X - zeropage, x (0xF6) - 6 cycles
+		Incremented 1 at zero page address (0x8B) + Index X (0x05)
+
+CPU State:
+Accumulator: 0
+Index X: 5	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: 0010
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 1
+Carry Flag: 0
+
+Executing: INC oper - absolute (0xEE) - 6 cycles
+		Incremented 1 at absolute address (0x3000)
+
+CPU State:
+Accumulator: 0
+Index X: 5	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: 0013
+
+Status Flags:
+Negative Flag: 0
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: INC oper, X - absolute, x (0xFE) - 7 cycles
+		Incremented 1 at absolute address (0x4000) + Index X (0x05) = (0x4005)
+
+CPU State:
+Accumulator: 0
+Index X: 5	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: 0016
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 0
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+Executing: BRK (0x00) - 7 cycles
+
+CPU State:
+Accumulator: 0
+Index X: 5	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: 0017
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 1
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+
+
+CPU State:
+Accumulator: 0
+Index X: 5	Index Y: 0
+Stack Pointer: 00FD
+Program Counter: 0017
+
+Status Flags:
+Negative Flag: 1
+Overflow Flag: 0
+Unused Flag: 1
+Break Flag: 1
+Decimal Flag: 0
+IRQ Flag: 0
+Zero Flag: 0
+Carry Flag: 0
+

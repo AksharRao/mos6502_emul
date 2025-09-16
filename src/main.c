@@ -5,7 +5,7 @@
 int main(){
     cpu_t cpu;
     mem_t mem;
-    dword clk_cycle = 100;
+    dword clk_cycle = 200;
     
     cpu_init(&cpu);
     print_cpu_state(&cpu);
@@ -16,7 +16,8 @@ int main(){
     print_memory(&mem);
     #endif // DEBUG_MEMORY
 
-    #include "include/tests/stack_test.h"
+    // #include "include/tests/decrement_test.h"
+    #include "include/tests/increment_test.h"
 
     exec_instr(&clk_cycle, &cpu, &mem);
     print_cpu_state(&cpu);

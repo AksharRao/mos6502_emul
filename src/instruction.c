@@ -490,3 +490,147 @@ void instr_PLP_implied(cpu_t* cpu, mem_t* mem){
     printf("\t\tPopped %d (0x%02X) from Stack to Status Register\n",
         packed_sr, packed_sr);
 }
+
+// Decrement instructions
+
+// DEC oper - zeropage - Decrement zeropage address by 1
+void instr_DEC_zeropage(cpu_t* cpu, mem_t* mem){
+    byte zp_address = fetch_byte(cpu, mem);
+    byte zp_value = read_byte(zp_address, mem);
+    zp_value -= 1;
+    write_byte(zp_address, mem, zp_value);
+    printf("\t\tDecremented 1 at zero page address (0x%02X)\n",
+        zp_address);
+    cpu->negative = (zp_value & 0x80) != 0;
+    cpu->zeroFlag = (zp_value == 0);
+}
+
+// DEC oper, X - Decrement zeropage address + X by 1
+void instr_DEC_zeropage_x(cpu_t* cpu, mem_t* mem){
+    byte zp_address = fetch_byte(cpu, mem);
+    byte zp_address_x = (zp_address + cpu->indX) & 0xFF;
+    byte zp_x_value = read_byte(zp_address_x, mem);
+    zp_x_value -= 1;
+    write_byte(zp_address_x, mem, zp_x_value);
+    printf("\t\tDecremented 1 at zero page address (0x%02X) + Index X (0x%02X)\n",
+        zp_address, cpu->indX);
+    cpu->negative = (zp_x_value & 0x80) != 0;
+    cpu->zeroFlag = (zp_x_value == 0);
+}
+
+// DEC absolute - Decrement absolute address by 1
+void instr_DEC_absolute(cpu_t* cpu, mem_t* mem){
+    word abs_address = fetch_word(cpu, mem);
+    byte abs_value = read_byte(abs_address, mem);
+    abs_value -= 1;
+    write_byte(abs_address, mem, abs_value);
+    printf("\t\tDecremented 1 at absolute address (0x%04X)\n",
+        abs_address);
+    cpu->negative = (abs_value & 0x80) != 0;
+    cpu->zeroFlag = (abs_value == 0);
+}
+
+// DEC absolute, X - Decrement absolute address + index X by 1
+void instr_DEC_absolute_x(cpu_t* cpu, mem_t* mem){
+    word abs_address = fetch_word(cpu, mem);
+    word abs_address_x = abs_address + cpu->indX;
+    byte abs_address_x_value = read_byte(abs_address_x, mem);
+    abs_address_x_value -= 1;
+    write_byte(abs_address_x, mem, abs_address_x_value);
+    printf("\t\tDecremented 1 at absolute address (0x%04X) + Index X (0x%02X) = (0x%04X)\n",
+        abs_address, cpu->indX, abs_address_x);
+    cpu->negative = (abs_address_x_value & 0x80) != 0;
+    cpu->zeroFlag = (abs_address_x_value == 0);
+}
+
+// DEX - Decrement index X by 1
+void instr_DEX_implied(cpu_t* cpu, mem_t* mem){
+    (void)mem;
+    cpu->indX -= 1;
+    printf("\t\tDecremented Index X by 1, Index X = (0x%02X)\n",
+        cpu->indX);
+    cpu->negative = (cpu->indX & 0x80) != 0;
+    cpu->zeroFlag = (cpu->indX == 0);
+}
+
+// DEY - Decrement index Y by 1
+void instr_DEY_implied(cpu_t* cpu, mem_t* mem){
+    (void)mem;
+    cpu->indY -= 1;
+    printf("\t\tDecremented Index Y by 1, Index Y = (0x%02X)\n",
+        cpu->indY);
+    cpu->negative = (cpu->indY & 0x80) != 0;
+    cpu->zeroFlag = (cpu->indY == 0);
+}
+
+// Increment instructions
+
+// INC oper - zeropage - Increment zeropage address by 1
+void instr_INC_zeropage(cpu_t* cpu, mem_t* mem){
+    byte zp_address = fetch_byte(cpu, mem);
+    byte zp_value = read_byte(zp_address, mem);
+    zp_value += 1;
+    write_byte(zp_address, mem, zp_value);
+    printf("\t\tIncremented 1 at zero page address (0x%02X)\n",
+        zp_address);
+    cpu->negative = (zp_value & 0x80) != 0;
+    cpu->zeroFlag = (zp_value == 0);
+}
+
+// INC oper, X - Increment zeropage address + X by 1
+void instr_INC_zeropage_x(cpu_t* cpu, mem_t* mem){
+    byte zp_address = fetch_byte(cpu, mem);
+    byte zp_address_x = (zp_address + cpu->indX) & 0xFF;
+    byte zp_x_value = read_byte(zp_address_x, mem);
+    zp_x_value += 1;
+    write_byte(zp_address_x, mem, zp_x_value);
+    printf("\t\tIncremented 1 at zero page address (0x%02X) + Index X (0x%02X)\n",
+        zp_address, cpu->indX);
+    cpu->negative = (zp_x_value & 0x80) != 0;
+    cpu->zeroFlag = (zp_x_value == 0);
+}
+
+// INC absolute - Increment absolute address by 1
+void instr_INC_absolute(cpu_t* cpu, mem_t* mem){
+    word abs_address = fetch_word(cpu, mem);
+    byte abs_value = read_byte(abs_address, mem);
+    abs_value += 1;
+    write_byte(abs_address, mem, abs_value);
+    printf("\t\tIncremented 1 at absolute address (0x%04X)\n",
+        abs_address);
+    cpu->negative = (abs_value & 0x80) != 0;
+    cpu->zeroFlag = (abs_value == 0);
+}
+
+// INC absolute, X - Increment absolute address + index X by 1
+void instr_INC_absolute_x(cpu_t* cpu, mem_t* mem){
+    word abs_address = fetch_word(cpu, mem);
+    word abs_address_x = abs_address + cpu->indX;
+    byte abs_address_x_value = read_byte(abs_address_x, mem);
+    abs_address_x_value += 1;
+    write_byte(abs_address_x, mem, abs_address_x_value);
+    printf("\t\tIncremented 1 at absolute address (0x%04X) + Index X (0x%02X) = (0x%04X)\n",
+        abs_address, cpu->indX, abs_address_x);
+    cpu->negative = (abs_address_x_value & 0x80) != 0;
+    cpu->zeroFlag = (abs_address_x_value == 0);
+}
+
+// INX - Increment index X by 1
+void instr_INX_implied(cpu_t* cpu, mem_t* mem){
+    (void)mem;
+    cpu->indX += 1;
+    printf("\t\tIncremented Index X by 1, Index X = (0x%02X)\n",
+        cpu->indX);
+    cpu->negative = (cpu->indX & 0x80) != 0;
+    cpu->zeroFlag = (cpu->indX == 0);
+}
+
+// INY - Increment index Y by 1
+void instr_INY_implied(cpu_t* cpu, mem_t* mem){
+    (void)mem;
+    cpu->indY += 1;
+    printf("\t\tIncremented Index Y by 1, Index Y = (0x%02X)\n",
+        cpu->indY);
+    cpu->negative = (cpu->indY & 0x80) != 0;
+    cpu->zeroFlag = (cpu->indY == 0);
+}

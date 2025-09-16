@@ -66,6 +66,22 @@ void instr_PHP_implied(cpu_t* cpu, mem_t* mem);
 void instr_PLA_implied(cpu_t* cpu, mem_t* mem);
 void instr_PLP_implied(cpu_t* cpu, mem_t* mem);
 
+// Decrement instructions
+void instr_DEC_zeropage(cpu_t* cpu, mem_t* mem);
+void instr_DEC_zeropage_x(cpu_t* cpu, mem_t* mem);
+void instr_DEC_absolute(cpu_t* cpu, mem_t* mem);
+void instr_DEC_absolute_x(cpu_t* cpu, mem_t* mem);
+void instr_DEX_implied(cpu_t* cpu, mem_t* mem);
+void instr_DEY_implied(cpu_t* cpu, mem_t* mem);
+
+// Increment instructions
+void instr_INC_zeropage(cpu_t* cpu, mem_t* mem);
+void instr_INC_zeropage_x(cpu_t* cpu, mem_t* mem);
+void instr_INC_absolute(cpu_t* cpu, mem_t* mem);
+void instr_INC_absolute_x(cpu_t* cpu, mem_t* mem);
+void instr_INX_implied(cpu_t* cpu, mem_t* mem);
+void instr_INY_implied(cpu_t* cpu, mem_t* mem);
+
 static instruction_t instruction_table[] = {
     // [opcode] = {"Instruction info", no_of_clock_cycles, function_pointer}
     [0x00] = {"BRK", 7, instr_BRK},
@@ -109,7 +125,19 @@ static instruction_t instruction_table[] = {
     [0x48] = {"PHA - implied", 3, instr_PHA_implied},
     [0x08] = {"PHP - implied", 3, instr_PHP_implied},
     [0x68] = {"PLA - implied", 4, instr_PLA_implied},
-    [0x28] = {"PLP - implied", 4, instr_PLP_implied}
+    [0x28] = {"PLP - implied", 4, instr_PLP_implied},
+    [0xC6] = {"DEC oper - zeropage", 5, instr_DEC_zeropage},
+    [0xD6] = {"DEC oper, X - zeropage, x", 6, instr_DEC_zeropage_x},
+    [0xCE] = {"DEC oper - absolute", 6, instr_DEC_absolute},
+    [0xDE] = {"DEC oper, X - absolute, x", 7, instr_DEC_absolute_x},
+    [0xCA] = {"DEX - implied", 2, instr_DEX_implied},
+    [0x88] = {"DEY - implied", 2, instr_DEY_implied},
+    [0xE6] = {"INC oper - zeropage", 5, instr_INC_zeropage},
+    [0xF6] = {"INC oper, X - zeropage, x", 6, instr_INC_zeropage_x},
+    [0xEE] = {"INC oper - absolute", 6, instr_INC_absolute},
+    [0xFE] = {"INC oper, X - absolute, x", 7, instr_INC_absolute_x},
+    [0xE8] = {"INX - implied", 2, instr_INX_implied},
+    [0xC8] = {"INY - implied", 2, instr_INY_implied},
 };
 
 #endif
