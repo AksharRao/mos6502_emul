@@ -1,400 +1,108 @@
 #include "include/instruction.h"
 
-// Index
-// LDA Instructions - Line 11
-// STA Instructions - Line 115
-// LDX Instructions - Line 196
-// LDY Instructions - Line 259
-// STX Instructions - Line 322
-// STY Instructions - Line 356
-// Transfer Instructions - Line 392
-
-void instr_BRK(cpu_t* cpu, mem_t* mem){
-    cpu->breakFlag = true;
-    (void)mem;
+word get_operand_address(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
+    if (mode == IMMEDIATE) {
+        return (word)cpu->pc++;
+    } else if (mode == ABSOLUTE) {
+        word abs_address = fetch_word(cpu, mem);
+        return abs_address;
+    } else if (mode == ZEROPAGE) {
+        byte zp_address = fetch_byte(cpu, mem);
+        return (word)zp_address;
+    } else if (mode == ABSOLUTE_X) {
+        word abs_address = fetch_word(cpu, mem);
+        word abs_address_x = abs_address + cpu->indX;
+        return abs_address_x;
+    } else if (mode == ABSOLUTE_Y) {
+        word abs_address = fetch_word(cpu, mem);
+        word abs_address_y = abs_address + cpu->indY;
+        return abs_address_y;
+    } else if (mode == ZEROPAGE_X) {
+        byte zp_address = fetch_byte(cpu, mem);
+        byte zp_address_x = (zp_address + cpu->indX) & 0xFF;
+        return (word)zp_address_x;
+    } else if (mode == ZEROPAGE_Y) {
+        byte zp_address = fetch_byte(cpu, mem);
+        byte zp_address_y = (zp_address + cpu->indY) & 0xFF;
+        return (word)zp_address_y;
+    } else if (mode == INDIRECT) {
+        return 0;
+    } else if (mode == INDIRECT_X) {
+        byte zp_address = fetch_byte(cpu, mem);
+        word zp_pointer =  (zp_address + cpu->indX) & 0xFF;
+        word final_address = read_word(zp_pointer, mem);
+        return final_address;
+    } else if (mode == INDIRECT_Y) {
+        byte zp_address = fetch_byte(cpu, mem);
+        word base_pointer = read_word(zp_address, mem);
+        word final_address = base_pointer + cpu->indY;
+        return final_address;
+    } else if (mode == RELATIVE) {
+        return 0;
+    }
+    return 0;
 }
 
-// LDA Instructions
+void instr_BRK(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
+    cpu->breakFlag = true;
+    (void)mem;
+    (void)mode;
+}
 
-// LDA #oper - immediate
-// Loads immediate value into the accumulator
-// Ex. LDA #$42 - Loads 42h i.e. 0x42 into accumulator
-void instr_LDA_immediate(cpu_t* cpu, mem_t* mem){
-    cpu->acc = fetch_byte(cpu, mem);
+void instr_LDA(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
+    word address = get_operand_address(cpu, mem, mode);
+    cpu->acc = read_byte(address, mem);
     printf("\t\tLoaded %d (0x%02X) to Accumulator\n",
         cpu->acc, cpu->acc);
     cpu->negative = (cpu->acc & 0x80) != 0;
     cpu->zeroFlag = (cpu->acc == 0); 
 }
 
-// LDA oper - zero page
-// Loads value from zero page address into the accumulator
-// Ex. LDA $42 - Loads value from zero page address $42 into accumulator
-void instr_LDA_zeropage(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    cpu->acc = read_byte(zp_address, mem);
-    printf("\t\tLoaded %d (0x%02X)\n\t\tfrom zero page address (0x%02X) to Accumulator", 
-        cpu->acc, cpu->acc, zp_address);
-    cpu->negative = (cpu->acc & 0x80) != 0;
-    cpu->zeroFlag = (cpu->acc == 0); 
+void instr_STA(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
+    word address = get_operand_address(cpu, mem, mode);
+    write_byte(address, mem, cpu->acc);
+    printf("\t\tStored %d (0x%02X) to address (0x%02X) from Accumulator\n", 
+       cpu->acc, cpu->acc, address);
+    print_memory_address(mem, address);
 }
 
-// LDA oper,X - zero page indexed with X
-// Loads value from zero page address + X into the accumulator
-// Ex. LDA $42,X - Loads value from zero page address ($42 + X) into accumulator
-void instr_LDA_zeropage_x(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    byte zp_address_x = (zp_address + cpu->indX) & 0xFF;
-    cpu->acc = read_byte(zp_address_x, mem);
-    printf("\t\tLoaded %d (0x%02X)\n\t\tfrom zero page address (0x%02X),X\n\t\t(0x%02X + 0x%02X = 0x%02X) to Accumulator\n", 
-        cpu->acc, cpu->acc, zp_address, zp_address, cpu->indX, zp_address_x);
-    cpu->negative = (cpu->acc & 0x80) != 0;
-    cpu->zeroFlag = (cpu->acc == 0); 
-}
-
-// LDA oper - absolute
-// Loads value from absolute address into the accumulator
-// Ex. LDA $1234 - Loads value from absolute address $1234 into accumulator
-void instr_LDA_absolute(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    cpu->acc = read_byte(abs_address, mem);
-    printf("\t\tLoaded %d (0x%02X)\n\t\tfrom absolute address (0x%04X) to Accumulator\n", 
-        cpu->acc, cpu->acc, abs_address);
-    cpu->negative = (cpu->acc & 0x80) != 0;
-    cpu->zeroFlag = (cpu->acc == 0); 
-}
-
-// LDA oper,X - absolute indexed with X
-// Loads value from absolute address + X into the accumulator
-// Ex. LDA $1234,X - Loads value from absolute address ($1234 + X) into accumulator
-void instr_LDA_absolute_x(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    word abs_address_x = abs_address + cpu->indX;
-    cpu->acc = read_byte(abs_address_x, mem);
-    printf("\t\tLoaded %d (0x%02X)\n\t\tfrom absolute address (0x%04X), X\n\t\t(0x%04X + 0x%02X = 0x%04X) to Accumulator\n", 
-        cpu->acc, cpu->acc, abs_address, abs_address, cpu->indX, abs_address_x);
-    cpu->negative = (cpu->acc & 0x80) != 0;
-    cpu->zeroFlag = (cpu->acc == 0); 
-}
-
-// LDA oper,Y - absolute indexed with Y
-// Loads value from absolute address + Y into the accumulator
-// Ex. LDA $1234,Y - Loads value from absolute address ($1234 + Y) into accumulator
-void instr_LDA_absolute_y(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    word abs_address_y = abs_address + cpu->indY;
-    cpu->acc = read_byte(abs_address_y, mem);
-    printf("\t\tLoaded %d (0x%02X)\n\t\tfrom absolute address (0x%04X), Y\n\t\t(0x%04X + 0x%02X = 0x%04X) to Accumulator\n", 
-        cpu->acc, cpu->acc, abs_address, abs_address, cpu->indY, abs_address_y);
-    cpu->negative = (cpu->acc & 0x80) != 0;
-    cpu->zeroFlag = (cpu->acc == 0); 
-}
-
-// LDA (oper,X) - indexed indirect
-// Loads value from address pointed to by (zero page address + X) into the accumulator
-// Ex. LDA ($42,X) - Loads value from address stored at zero page ($42 + X) into accumulator
-void instr_LDA_indirect_x(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    word zp_pointer =  (zp_address + cpu->indX) & 0xFF;
-    word final_address = read_word(zp_pointer, mem);
-    cpu->acc = read_byte(final_address, mem);
-    printf("\t\tLoaded %d (0x%02X) from ($%02X,X)\n\t\t($%02X + $%02X = $%02X) -> $%04X to Accumulator\n", 
-        cpu->acc, cpu->acc, zp_address, zp_address, cpu->indX, zp_pointer, final_address);
-    cpu->negative = (cpu->acc & 0x80) != 0;
-    cpu->zeroFlag = (cpu->acc == 0);
-}
-
-// LDA (oper),Y - indirect indexed
-// Loads value from (address pointed to by zero page address) + Y into the accumulator
-// Ex. LDA ($42),Y - Loads value from (address at $42) + Y into accumulator
-void instr_LDA_indirect_y(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    word base_pointer = read_word(zp_address, mem);
-    word final_address = base_pointer + cpu->indY;
-    cpu->acc = read_byte(final_address, mem);
-    printf("\t\tLoaded %d (0x%02X) from ($%02X),Y\n\t\t($%04X + $%02X = $%04X) to Accumulator\n", 
-        cpu->acc, cpu->acc, zp_address, base_pointer, cpu->indY, final_address);
-    cpu->negative = (cpu->acc & 0x80) != 0;
-    cpu->zeroFlag = (cpu->acc == 0);
-}
-
-// STA Instructions
-
-// STA oper - zero page
-// Stores accumulator value to zero page address
-// Ex. STA $42 - Stores accumulator value to zero page address $42
-void instr_STA_zeropage(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    write_byte(zp_address, mem, cpu->acc);
-    printf("\t\tStored %d (0x%02X) to zero page address (0x%02X) from Accumulator\n", 
-       cpu->acc, cpu->acc, zp_address);
-    print_memory_address(mem, zp_address);
-}
-
-// STA oper,X - zero page indexed with X
-// Stores accumulator value to zero page address + X
-// Ex. STA $42,X - Stores accumulator value to zero page address ($42 + X)
-void instr_STA_zeropage_x(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    byte zp_address_x = (zp_address + cpu->indX) & 0xFF;
-    write_byte(zp_address_x, mem, cpu->acc);
-    printf("\t\tStored %d (0x%02X)\n\t\tto zero page address (0x%02X),X\n\t\t(0x%02X + 0x%02X = 0x%02X) from Accumulator\n", 
-        cpu->acc, cpu->acc, zp_address, zp_address, cpu->indX, zp_address_x);
-}
-
-// STA oper - absolute
-// Stores accumulator value to absolute address
-// Ex. STA $1234 - Stores accumulator value to absolute address $1234
-void instr_STA_absolute(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    write_byte(abs_address, mem, cpu->acc);
-    printf("\t\tStored %d (0x%02X)\n\t\tto absolute address (0x%04X) from Accumulator\n", 
-        cpu->acc, cpu->acc, abs_address);
-}
-
-// STA oper,X - absolute indexed with X
-// Stores accumulator value to absolute address + X
-// Ex. STA $1234,X - Stores accumulator value to absolute address ($1234 + X)
-void instr_STA_absolute_x(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    word abs_address_x = abs_address + cpu->indX;
-    write_byte(abs_address_x, mem, cpu->acc);
-    printf("\t\tStored %d (0x%02X)\n\t\tto absolute address (0x%04X), X\n\t\t(0x%04X + 0x%02X = 0x%04X) from Accumulator\n", 
-        cpu->acc, cpu->acc, abs_address, abs_address, cpu->indX, abs_address_x);
-}
-
-// STA oper,Y - absolute indexed with Y
-// Stores accumulator value to absolute address + Y
-// Ex. STA $1234,Y - Stores accumulator value to absolute address ($1234 + Y)
-void instr_STA_absolute_y(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    word abs_address_y = abs_address + cpu->indY;
-    write_byte(abs_address_y, mem, cpu->acc);
-    printf("\t\tStored %d (0x%02X)\n\t\tto absolute address (0x%04X), Y\n\t\t(0x%04X + 0x%02X = 0x%04X) from Accumulator\n", 
-        cpu->acc, cpu->acc, abs_address, abs_address, cpu->indY, abs_address_y);
-}
-
-// STA (oper,X) - indexed indirect
-// Stores accumulator value to address pointed to by (zero page address + X)
-// Ex. STA ($42,X) - Stores accumulator value to address stored at zero page ($42 + X)
-void instr_STA_indirect_x(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    word zp_pointer =  (zp_address + cpu->indX) & 0xFF;
-    word final_address = read_word(zp_pointer, mem);
-    write_byte(final_address, mem, cpu->acc);
-    printf("\t\tStored %d (0x%02X) to ($%02X,X)\n\t\t($%02X + $%02X = $%02X) -> $%04X from Accumulator\n", 
-        cpu->acc, cpu->acc, zp_address, zp_address, cpu->indX, zp_pointer, final_address);
-}
-
-// STA (oper),Y - indirect indexed
-// Stores accumulator value to (address pointed to by zero page address) + Y
-// Ex. STA ($42),Y - Stores accumulator value to (address at $42) + Y
-void instr_STA_indirect_y(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    word base_pointer = read_word(zp_address, mem);
-    word final_address = base_pointer + cpu->indY;
-    write_byte(final_address, mem, cpu->acc);
-    printf("\t\tStored %d (0x%02X) to ($%02X),Y\n\t\t($%04X + $%02X = $%04X) from Accumulator\n", 
-        cpu->acc, cpu->acc, zp_address, base_pointer, cpu->indY, final_address);
-}
-
-// LDX Instructions
-
-// LDX #oper - immediate
-// Loads immediate value into the X index register
-// Ex. LDX #$42 - Loads 42h i.e. 0x42 into X register
-void instr_LDX_immediate(cpu_t* cpu, mem_t* mem){
-    cpu->indX = fetch_byte(cpu, mem);
+void instr_LDX(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
+    word address = get_operand_address(cpu, mem, mode);
+    cpu->indX = read_byte(address, mem);
     printf("\t\tLoaded %d (0x%02X) to Index register X\n", cpu->indX, cpu->indX);
     cpu->negative = (cpu->indX & 0x80) != 0;
     cpu->zeroFlag = (cpu->indX == 0); 
 }
 
-// LDX oper - zero page
-// Loads value from zero page address into the X index register
-// Ex. LDX $42 - Loads value from zero page address $42 into X register
-void instr_LDX_zeropage(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    cpu->indX = read_byte(zp_address, mem);
-    printf("\t\tLoaded %d (0x%02X)\n\t\tfrom zero page address (0x%02X) to Index register X", 
-        cpu->indX, cpu->indX, zp_address);
-    cpu->negative = (cpu->indX & 0x80) != 0;
-    cpu->zeroFlag = (cpu->indX == 0); 
-}
-
-// LDX oper,Y - zero page indexed with Y
-// Loads value from zero page address + Y into the X index register
-// Ex. LDX $42,Y - Loads value from zero page address ($42 + Y) into X register
-void instr_LDX_zeropage_y(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    byte zp_address_y = (zp_address + cpu->indY) & 0xFF;
-    cpu->indX = read_byte(zp_address_y, mem);
-    printf("\t\tLoaded %d (0x%02X)\n\t\tfrom zero page address (0x%02X),Y\n\t\t(0x%02X + 0x%02X = 0x%02X) to Index register X\n", 
-        cpu->indX, cpu->indX, zp_address, zp_address, cpu->indY, zp_address_y);
-    cpu->negative = (cpu->indX & 0x80) != 0;
-    cpu->zeroFlag = (cpu->indX == 0); 
-}
-
-// LDX oper - absolute 
-// Loads from an absolute address to X index register
-// Ex. LDX $1234 - Loads value from absolute address $1234 into X register
-void instr_LDX_absolute(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    cpu->indX = read_byte(abs_address, mem);
-    printf("\t\tLoaded %d (0x%02X)\n\t\tfrom absolute address (0x%04X) to Index register X\n", 
-        cpu->indX, cpu->indX, abs_address);
-    cpu->negative = (cpu->indX & 0x80) != 0;
-    cpu->zeroFlag = (cpu->indX == 0); 
-}
-
-// LDX oper, Y - absolute, Y
-// Loads from absolute address + Y into X index register
-// Ex. LDX $1234,Y - Laods value from absolute address $1234 + Y into X register
-void instr_LDX_absolute_y(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    word abs_address_y = abs_address + cpu->indY;
-    cpu->indX = read_byte(abs_address_y, mem);
-    printf("\t\tLoaded %d (0x%02X)\n\t\tfrom absolute address (0x%04X), Y\n\t\t(0x%04X + 0x%02X = 0x%04X) to Index register X\n", 
-        cpu->indX, cpu->indX, abs_address, abs_address, cpu->indY, abs_address_y);
-    cpu->negative = (cpu->indX & 0x80) != 0;
-    cpu->zeroFlag = (cpu->indX == 0); 
-}
-
-// LDY Instructions
-
-// LDY #oper - immediate
-// Loads immediate value into the Y index register
-// Ex. LDY #$42 - Loads 42h i.e. 0x42 into Y register
-void instr_LDY_immediate(cpu_t* cpu, mem_t* mem){
-    cpu->indY = fetch_byte(cpu, mem);
+void instr_LDY(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
+    word address = get_operand_address(cpu, mem, mode);
+    cpu->indY = read_byte(address, mem);
     printf("\t\tLoaded %d (0x%02X) to Index register Y\n", cpu->indY, cpu->indY);
     cpu->negative = (cpu->indY & 0x80) != 0;
     cpu->zeroFlag = (cpu->indY == 0); 
 }
 
-// LDY oper - zero page
-// Loads value from zero page address into the Y index register
-// Ex. LDY $42 - Loads value from zero page address $42 into Y register
-void instr_LDY_zeropage(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    cpu->indY = read_byte(zp_address, mem);
-    printf("\t\tLoaded %d (0x%02X)\n\t\tfrom zero page address (0x%02X) to Index register Y", 
-        cpu->indY, cpu->indY, zp_address);
-    cpu->negative = (cpu->indY & 0x80) != 0;
-    cpu->zeroFlag = (cpu->indY == 0); 
+void instr_STX(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
+    word address = get_operand_address(cpu, mem, mode);
+    write_byte(address, mem, cpu->indX);
+    printf("\t\tStored %d (0x%02X) to address (0x%02X) from Index register X\n", 
+       cpu->indX, cpu->indX, address);
+    print_memory_address(mem, address);
 }
 
-// LDY oper,X - zero page indexed with X
-// Loads value from zero page address + X into the Y index register
-// Ex. LDY $42,X - Loads value from zero page address ($42 + X) into Y register
-void instr_LDY_zeropage_x(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    byte zp_address_x = (zp_address + cpu->indX) & 0xFF;
-    cpu->indY = read_byte(zp_address_x, mem);
-    printf("\t\tLoaded %d (0x%02X)\n\t\tfrom zero page address (0x%02X),X\n\t\t(0x%02X + 0x%02X = 0x%02X) to Index register Y\n", 
-        cpu->indY, cpu->indY, zp_address, zp_address, cpu->indX, zp_address_x);
-    cpu->negative = (cpu->indY & 0x80) != 0;
-    cpu->zeroFlag = (cpu->indY == 0); 
-}
-
-// LDY oper - absolute 
-// Loads value from absolute address into the Y index register
-// Ex. LDY $1234 - Loads value from absolute address $1234 into Y register
-void instr_LDY_absolute(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    cpu->indY = read_byte(abs_address, mem);
-    printf("\t\tLoaded %d (0x%02X)\n\t\tfrom absolute address (0x%04X) to Index register Y\n", 
-        cpu->indY, cpu->indY, abs_address);
-    cpu->negative = (cpu->indY & 0x80) != 0;
-    cpu->zeroFlag = (cpu->indY == 0); 
-}
-
-// LDY oper,X - absolute indexed with X
-// Loads value from absolute address + X into the Y index register
-// Ex. LDY $1234,X - Loads value from absolute address ($1234 + X) into Y register
-void instr_LDY_absolute_x(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    word abs_address_x = abs_address + cpu->indX;
-    cpu->indY = read_byte(abs_address_x, mem);
-    printf("\t\tLoaded %d (0x%02X)\n\t\tfrom absolute address (0x%04X), X\n\t\t(0x%04X + 0x%02X = 0x%04X) to Index register Y\n", 
-        cpu->indY, cpu->indY, abs_address, abs_address, cpu->indX, abs_address_x);
-    cpu->negative = (cpu->indY & 0x80) != 0;
-    cpu->zeroFlag = (cpu->indY == 0); 
-}
-
-// STX Instructions
-
-// STX oper - zero page
-// Stores x index register value to zero page address
-// Ex. STX $42 - Stores x index register value to zero page address $42
-void instr_STX_zeropage(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    write_byte(zp_address, mem, cpu->indX);
-    printf("\t\tStored %d (0x%02X) to zero page address (0x%02X) from Index register X\n", 
-       cpu->indX, cpu->indX, zp_address);
-    print_memory_address(mem, zp_address);
-}
-
-// STX oper,Y - zero page indexed with Y
-// Stores x index register value to zero page address + Y
-// Ex. STX $42,Y - Stores x index register value to zero page address ($42 + Y)
-void instr_STX_zeropage_y(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    byte zp_address_y = (zp_address + cpu->indY) & 0xFF;
-    write_byte(zp_address_y, mem, cpu->indX);
-    printf("\t\tStored %d (0x%02X)\n\t\tto zero page address (0x%02X),Y\n\t\t(0x%02X + 0x%02X = 0x%02X) from Index register X\n", 
-        cpu->indX, cpu->indX, zp_address, zp_address, cpu->indY, zp_address_y);
-}
-
-// STX oper - absolute
-// Stores x index register value to absolute address
-// Ex. STX $1234 - Stores x index register value to absolute address $1234
-void instr_STX_absolute(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    write_byte(abs_address, mem, cpu->indX);
-    printf("\t\tStored %d (0x%02X)\n\t\tto absolute address (0x%04X) from Index register X\n", 
-        cpu->indX, cpu->indX, abs_address);
-}
-
-// STY Instructions
-
-// STY oper - zero page
-// Stores Y index register value to zero page address
-// Ex. STY $42 - Stores Y index register value to zero page address $42
-void instr_STY_zeropage(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    write_byte(zp_address, mem, cpu->indY);
-    printf("\t\tStored %d (0x%02X) to zero page address (0x%02X) from Index register Y\n", 
-       cpu->indY, cpu->indY, zp_address);
-    print_memory_address(mem, zp_address);
-}
-
-// STY oper,X - zero page indexed with X
-// Stores Y index register value to zero page address + X
-// Ex. STY $42,X - Stores Y index register value to zero page address ($42 + X)
-void instr_STY_zeropage_x(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    byte zp_address_x = (zp_address + cpu->indX) & 0xFF;
-    write_byte(zp_address_x, mem, cpu->indY);
-    printf("\t\tStored %d (0x%02X)\n\t\tto zero page address (0x%02X),X\n\t\t(0x%02X + 0x%02X = 0x%02X) from Index register Y\n", 
-        cpu->indY, cpu->indY, zp_address, zp_address, cpu->indX, zp_address_x);
-}
-
-// STY oper - absolute
-// Stores Y index register value to absolute address
-// Ex. STY $1234 - Stores Y index register value to absolute address $1234
-void instr_STY_absolute(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    write_byte(abs_address, mem, cpu->indY);
-    printf("\t\tStored %d (0x%02X)\n\t\tto absolute address (0x%04X) from Index register Y\n", 
-        cpu->indY, cpu->indY, abs_address);
+void instr_STY(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
+    word address = get_operand_address(cpu, mem, mode);
+    write_byte(address, mem, cpu->indY);
+    printf("\t\tStored %d (0x%02X) to address (0x%02X) from Index register Y\n", 
+       cpu->indY, cpu->indY, address);
+    print_memory_address(mem, address);
 }
 
 // Transfer Instructions
-
 // TAX implied - Transfer Accumulator to index X
-void instr_TAX_implied(cpu_t* cpu, mem_t* mem){
+void instr_TAX(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
     (void)mem; // To get rid of unused variable warning
+    (void)mode;
     cpu->indX = cpu->acc;
     printf("\t\tTransfered %d (0x%02X) from Accumulator to Index register X\n",
         cpu->indX, cpu->indX);
@@ -403,8 +111,9 @@ void instr_TAX_implied(cpu_t* cpu, mem_t* mem){
 }
 
 // TAY implied - Transfer Accumulator to index Y
-void instr_TAY_implied(cpu_t* cpu, mem_t* mem){
+void instr_TAY(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
     (void)mem;
+    (void)mode;
     cpu->indY = cpu->acc;
     printf("\t\tTransfered %d (0x%02X) from Accumulator to Index register Y\n",
         cpu->indY, cpu->indY);
@@ -413,8 +122,9 @@ void instr_TAY_implied(cpu_t* cpu, mem_t* mem){
 }
 
 // TSX implied - Transfer Stack pointer to index X
-void instr_TSX_implied(cpu_t* cpu, mem_t* mem){
+void instr_TSX(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
     (void)mem;
+    (void)mode;
     cpu->indX = cpu->sp;
     printf("\t\tTransfered %d (0x%02X) from Stack pointer to Index register X\n",
         cpu->indX, cpu->indX);
@@ -423,8 +133,9 @@ void instr_TSX_implied(cpu_t* cpu, mem_t* mem){
 }
 
 // TXA implied - Transfer Index X to Accumulator
-void instr_TXA_implied(cpu_t* cpu, mem_t* mem){
+void instr_TXA(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
     (void)mem;
+    (void)mode;
     cpu->acc = cpu->indX;
     printf("\t\tTransfered %d (0x%02X) from Index register X to Accumulator\n",
         cpu->acc, cpu->acc);
@@ -433,8 +144,9 @@ void instr_TXA_implied(cpu_t* cpu, mem_t* mem){
 }
 
 // TXS implied - Transfer Index X to Stack Pointer
-void instr_TXS_implied(cpu_t* cpu, mem_t* mem){
+void instr_TXS(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
     (void)mem;
+    (void)mode;
     cpu->sp = cpu->indX;
     printf("\t\tTransfered %d (0x%02X) from Index register X to Stack Pointer\n",
         cpu->sp, cpu->sp);
@@ -443,8 +155,9 @@ void instr_TXS_implied(cpu_t* cpu, mem_t* mem){
 }
 
 // TYA implied - Transfer Index Y to accumulator
-void instr_TYA_implied(cpu_t* cpu, mem_t* mem){
+void instr_TYA(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
     (void)mem;
+    (void)mode;
     cpu->acc = cpu->indY;
     printf("\t\tTransfered %d (0x%02X) from Index register Y to Accumulator\n",
         cpu->acc, cpu->acc);
@@ -453,14 +166,16 @@ void instr_TYA_implied(cpu_t* cpu, mem_t* mem){
 }
 
 // PHA implied - Push accumulator onto stack
-void instr_PHA_implied(cpu_t* cpu, mem_t* mem){
+void instr_PHA(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
+    (void)mode;
     push_stack(cpu, mem, cpu->acc);
     printf("\t\tPushed %d (0x%02X) from Accumulator on to the Stack\n",
         cpu->acc, cpu->acc);
 }
 
 // PHP implied - Push Status Register onto stack
-void instr_PHP_implied(cpu_t* cpu, mem_t* mem){
+void instr_PHP(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
+    (void)mode;
     byte packed_sr = pack_status_register(cpu);
     packed_sr |= (1 << 4); // Set break flag
     push_stack(cpu, mem, packed_sr);
@@ -469,7 +184,8 @@ void instr_PHP_implied(cpu_t* cpu, mem_t* mem){
 }
 
 // PLA implied - Pull accumulator from stack
-void instr_PLA_implied(cpu_t* cpu, mem_t* mem){
+void instr_PLA(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
+    (void)mode;
     cpu->acc = pop_stack(cpu, mem);
     printf("\t\tPopped %d (0x%02X) from Stack to Accumulator\n",
         cpu->acc, cpu->acc);
@@ -477,7 +193,8 @@ void instr_PLA_implied(cpu_t* cpu, mem_t* mem){
     cpu->zeroFlag = (cpu->acc == 0); 
 }
 
-void instr_PLP_implied(cpu_t* cpu, mem_t* mem){
+void instr_PLP(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
+    (void)mode;
     byte packed_sr = pop_stack(cpu, mem);
     // Unused and Break flag are to be ignored
     cpu->negative = (packed_sr >> 7) & 1;   
@@ -491,61 +208,21 @@ void instr_PLP_implied(cpu_t* cpu, mem_t* mem){
         packed_sr, packed_sr);
 }
 
-// Decrement instructions
-
-// DEC oper - zeropage - Decrement zeropage address by 1
-void instr_DEC_zeropage(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    byte zp_value = read_byte(zp_address, mem);
-    zp_value -= 1;
-    write_byte(zp_address, mem, zp_value);
-    printf("\t\tDecremented 1 at zero page address (0x%02X)\n",
-        zp_address);
-    cpu->negative = (zp_value & 0x80) != 0;
-    cpu->zeroFlag = (zp_value == 0);
-}
-
-// DEC oper, X - Decrement zeropage address + X by 1
-void instr_DEC_zeropage_x(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    byte zp_address_x = (zp_address + cpu->indX) & 0xFF;
-    byte zp_x_value = read_byte(zp_address_x, mem);
-    zp_x_value -= 1;
-    write_byte(zp_address_x, mem, zp_x_value);
-    printf("\t\tDecremented 1 at zero page address (0x%02X) + Index X (0x%02X)\n",
-        zp_address, cpu->indX);
-    cpu->negative = (zp_x_value & 0x80) != 0;
-    cpu->zeroFlag = (zp_x_value == 0);
-}
-
-// DEC absolute - Decrement absolute address by 1
-void instr_DEC_absolute(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    byte abs_value = read_byte(abs_address, mem);
-    abs_value -= 1;
-    write_byte(abs_address, mem, abs_value);
-    printf("\t\tDecremented 1 at absolute address (0x%04X)\n",
-        abs_address);
-    cpu->negative = (abs_value & 0x80) != 0;
-    cpu->zeroFlag = (abs_value == 0);
-}
-
-// DEC absolute, X - Decrement absolute address + index X by 1
-void instr_DEC_absolute_x(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    word abs_address_x = abs_address + cpu->indX;
-    byte abs_address_x_value = read_byte(abs_address_x, mem);
-    abs_address_x_value -= 1;
-    write_byte(abs_address_x, mem, abs_address_x_value);
-    printf("\t\tDecremented 1 at absolute address (0x%04X) + Index X (0x%02X) = (0x%04X)\n",
-        abs_address, cpu->indX, abs_address_x);
-    cpu->negative = (abs_address_x_value & 0x80) != 0;
-    cpu->zeroFlag = (abs_address_x_value == 0);
+void instr_DEC(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
+    word address = get_operand_address(cpu, mem, mode);
+    byte value = read_byte(address, mem);
+    value -= 1;
+    write_byte(address, mem, value);
+    printf("\t\tDecremented 1 at address (0x%02X)\n",
+        value);
+    cpu->negative = (value & 0x80) != 0;
+    cpu->zeroFlag = (value == 0);
 }
 
 // DEX - Decrement index X by 1
-void instr_DEX_implied(cpu_t* cpu, mem_t* mem){
+void instr_DEX(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
     (void)mem;
+    (void)mode;
     cpu->indX -= 1;
     printf("\t\tDecremented Index X by 1, Index X = (0x%02X)\n",
         cpu->indX);
@@ -554,8 +231,9 @@ void instr_DEX_implied(cpu_t* cpu, mem_t* mem){
 }
 
 // DEY - Decrement index Y by 1
-void instr_DEY_implied(cpu_t* cpu, mem_t* mem){
+void instr_DEY(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
     (void)mem;
+    (void)mode;
     cpu->indY -= 1;
     printf("\t\tDecremented Index Y by 1, Index Y = (0x%02X)\n",
         cpu->indY);
@@ -563,61 +241,21 @@ void instr_DEY_implied(cpu_t* cpu, mem_t* mem){
     cpu->zeroFlag = (cpu->indY == 0);
 }
 
-// Increment instructions
-
-// INC oper - zeropage - Increment zeropage address by 1
-void instr_INC_zeropage(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    byte zp_value = read_byte(zp_address, mem);
-    zp_value += 1;
-    write_byte(zp_address, mem, zp_value);
-    printf("\t\tIncremented 1 at zero page address (0x%02X)\n",
-        zp_address);
-    cpu->negative = (zp_value & 0x80) != 0;
-    cpu->zeroFlag = (zp_value == 0);
-}
-
-// INC oper, X - Increment zeropage address + X by 1
-void instr_INC_zeropage_x(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    byte zp_address_x = (zp_address + cpu->indX) & 0xFF;
-    byte zp_x_value = read_byte(zp_address_x, mem);
-    zp_x_value += 1;
-    write_byte(zp_address_x, mem, zp_x_value);
-    printf("\t\tIncremented 1 at zero page address (0x%02X) + Index X (0x%02X)\n",
-        zp_address, cpu->indX);
-    cpu->negative = (zp_x_value & 0x80) != 0;
-    cpu->zeroFlag = (zp_x_value == 0);
-}
-
-// INC absolute - Increment absolute address by 1
-void instr_INC_absolute(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    byte abs_value = read_byte(abs_address, mem);
-    abs_value += 1;
-    write_byte(abs_address, mem, abs_value);
-    printf("\t\tIncremented 1 at absolute address (0x%04X)\n",
-        abs_address);
-    cpu->negative = (abs_value & 0x80) != 0;
-    cpu->zeroFlag = (abs_value == 0);
-}
-
-// INC absolute, X - Increment absolute address + index X by 1
-void instr_INC_absolute_x(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    word abs_address_x = abs_address + cpu->indX;
-    byte abs_address_x_value = read_byte(abs_address_x, mem);
-    abs_address_x_value += 1;
-    write_byte(abs_address_x, mem, abs_address_x_value);
-    printf("\t\tIncremented 1 at absolute address (0x%04X) + Index X (0x%02X) = (0x%04X)\n",
-        abs_address, cpu->indX, abs_address_x);
-    cpu->negative = (abs_address_x_value & 0x80) != 0;
-    cpu->zeroFlag = (abs_address_x_value == 0);
+void instr_INC(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
+    word address = get_operand_address(cpu, mem, mode);
+    byte value = read_byte(address, mem);
+    value += 1;
+    write_byte(address, mem, value);
+    printf("\t\tIncremented 1 at address (0x%02X)\n",
+        address);
+    cpu->negative = (value & 0x80) != 0;
+    cpu->zeroFlag = (value == 0);
 }
 
 // INX - Increment index X by 1
-void instr_INX_implied(cpu_t* cpu, mem_t* mem){
+void instr_INX(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
     (void)mem;
+    (void)mode;
     cpu->indX += 1;
     printf("\t\tIncremented Index X by 1, Index X = (0x%02X)\n",
         cpu->indX);
@@ -626,8 +264,9 @@ void instr_INX_implied(cpu_t* cpu, mem_t* mem){
 }
 
 // INY - Increment index Y by 1
-void instr_INY_implied(cpu_t* cpu, mem_t* mem){
+void instr_INY(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
     (void)mem;
+    (void)mode;
     cpu->indY += 1;
     printf("\t\tIncremented Index Y by 1, Index Y = (0x%02X)\n",
         cpu->indY);
@@ -638,10 +277,9 @@ void instr_INY_implied(cpu_t* cpu, mem_t* mem){
 // Arithemetic Instructions
 
 // ADC - Add with carry
-
-// ADC #oper - immediate
-void instr_ADC_immediate(cpu_t* cpu, mem_t* mem){
-    byte operand = fetch_byte(cpu, mem);
+void instr_ADC(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
+    word address = get_operand_address(cpu, mem, mode);
+    byte operand = read_byte(address, mem);
     byte old_acc = cpu->acc;
     word result = cpu->acc + operand + cpu->carryFlag;
     cpu->acc = result & 0xFF;
@@ -653,128 +291,10 @@ void instr_ADC_immediate(cpu_t* cpu, mem_t* mem){
     cpu->overflow = ((old_acc ^ cpu->acc) & (operand ^ cpu->acc) & 0x80) != 0;
 }
 
-// ADC oper - zeropage
-void instr_ADC_zeropage(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    byte operand = read_byte(zp_address, mem);
-    byte old_acc = cpu->acc;
-    word result = cpu->acc + operand + cpu->carryFlag;
-    cpu->acc = result & 0xFF;
-    printf("\t\tAdded %d (0x%02X) + %d (carry) from zero page address (0x%02X) to Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, cpu->carryFlag, zp_address, cpu->acc, cpu->acc);
-    cpu->carryFlag = (result > 0xFF) ? 1 : 0;
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-    cpu->overflow = ((old_acc ^ cpu->acc) & (operand ^ cpu->acc) & 0x80) != 0;
-}
-
-// ADC oper, X - zeropage, X
-void instr_ADC_zeropage_x(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    byte zp_address_x = (zp_address + cpu->indX) & 0xFF;
-    byte operand = read_byte(zp_address_x, mem);
-    byte old_acc = cpu->acc;
-    word result = cpu->acc + operand + cpu->carryFlag;
-    cpu->acc = result & 0xFF;
-    printf("\t\tAdded %d (0x%02X) + %d (carry) from zero page address (0x%02X),X\n\t\t(0x%02X + 0x%02X = 0x%02X) to Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, cpu->carryFlag, zp_address, 
-        zp_address, cpu->indX, zp_address_x, cpu->acc, cpu->acc);
-    cpu->carryFlag = (result > 0xFF) ? 1 : 0;
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-    cpu->overflow = ((old_acc ^ cpu->acc) & (operand ^ cpu->acc) & 0x80) != 0;
-}
-
-// ADC oper - absolute
-void instr_ADC_absolute(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    byte operand = read_byte(abs_address, mem);
-    byte old_acc = cpu->acc;
-    word result = cpu->acc + operand + cpu->carryFlag;
-    cpu->acc = result & 0xFF;
-    printf("\t\tAdded %d (0x%02X) + %d (carry) from absolute address (0x%04X) to Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, cpu->carryFlag, abs_address, cpu->acc, cpu->acc);
-    cpu->carryFlag = (result > 0xFF) ? 1 : 0;
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-    cpu->overflow = ((old_acc ^ cpu->acc) & (operand ^ cpu->acc) & 0x80) != 0;
-}
-
-// ADC oper, X - absolute, X
-void instr_ADC_absolute_x(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    word abs_address_x = abs_address + cpu->indX;
-    byte operand = read_byte(abs_address_x, mem);
-    byte old_acc = cpu->acc;
-    word result = cpu->acc + operand + cpu->carryFlag;
-    cpu->acc = result & 0xFF;
-    printf("\t\tAdded %d (0x%02X) + %d (carry) from absolute address (0x%04X),X\n\t\t(0x%04X + 0x%02X = 0x%02X) to Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, cpu->carryFlag, abs_address, 
-        abs_address, cpu->indX, abs_address_x, cpu->acc, cpu->acc);
-    cpu->carryFlag = (result > 0xFF) ? 1 : 0;
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-    cpu->overflow = ((old_acc ^ cpu->acc) & (operand ^ cpu->acc) & 0x80) != 0;
-}
-
-// ADC oper, Y - absolute, Y
-void instr_ADC_absolute_y(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    word abs_address_y = abs_address + cpu->indY;
-    byte operand = read_byte(abs_address_y, mem);
-    byte old_acc = cpu->acc;
-    word result = cpu->acc + operand + cpu->carryFlag;
-    cpu->acc = result & 0xFF;
-    printf("\t\tAdded %d (0x%02X) + %d (carry) from absolute address (0x%04X),Y\n\t\t(0x%04X + 0x%02X = 0x%04X) to Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, cpu->carryFlag, abs_address, 
-        abs_address, cpu->indY, abs_address_y, cpu->acc, cpu->acc);
-    cpu->carryFlag = (result > 0xFF) ? 1 : 0;
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-    cpu->overflow = ((old_acc ^ cpu->acc) & (operand ^ cpu->acc) & 0x80) != 0;
-}
-
-// ADC (oper, X) - (indirect,X)
-void instr_ADC_indirect_x(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    word zp_pointer = (zp_address + cpu->indX) & 0xFF;
-    word final_address = read_word(zp_pointer, mem);
-    byte operand = read_byte(final_address, mem);
-    byte old_acc = cpu->acc;
-    word result = cpu->acc + operand + cpu->carryFlag;
-    cpu->acc = result & 0xFF;
-    printf("\t\tAdded %d (0x%02X) + %d (carry) from ($%02X,X)\n\t\t($%02X + $%02X = $%02X) -> $%04X to Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, cpu->carryFlag, zp_address,
-        zp_address, cpu->indX, zp_pointer, final_address, cpu->acc, cpu->acc);
-    cpu->carryFlag = (result > 0xFF) ? 1 : 0;
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-    cpu->overflow = ((old_acc ^ cpu->acc) & (operand ^ cpu->acc) & 0x80) != 0;
-}
-
-// ADC (oper), Y - (indirect), Y
-void instr_ADC_indirect_y(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    word base_pointer = read_word(zp_address, mem);
-    word final_address = base_pointer + cpu->indY;
-    byte operand = read_byte(final_address, mem);
-    byte old_acc = cpu->acc;
-    word result = cpu->acc + operand + cpu->carryFlag;
-    cpu->acc = result & 0xFF;
-    printf("\t\tAdded %d (0x%02X) + %d (carry) from ($%02X),Y\n\t\t($%04X + $%02X = $%04X) to Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, cpu->carryFlag, zp_address,
-        base_pointer, cpu->indY, final_address, cpu->acc, cpu->acc);        
-    cpu->carryFlag = (result > 0xFF) ? 1 : 0;
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-    cpu->overflow = ((old_acc ^ cpu->acc) & (operand ^ cpu->acc) & 0x80) != 0;
-}
-
 // SBC - Subtract with carry
-
-// SBC #oper - immediate
-void instr_SBC_immediate(cpu_t* cpu, mem_t* mem){
-    byte operand = fetch_byte(cpu, mem);
+void instr_SBC(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
+    word address = get_operand_address(cpu, mem, mode);
+    byte operand = read_byte(address, mem);
     byte old_acc = cpu->acc;
     word result = cpu->acc - operand - (1 - cpu->carryFlag);
     cpu->acc = result & 0xFF;
@@ -786,132 +306,11 @@ void instr_SBC_immediate(cpu_t* cpu, mem_t* mem){
     cpu->overflow = ((old_acc ^ operand) & (old_acc ^ cpu->acc) & 0x80) != 0;
 }
 
-// SBC oper - zeropage
-void instr_SBC_zeropage(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    byte operand = read_byte(zp_address, mem);
-    byte old_acc = cpu->acc;
-    word result = cpu->acc - operand - (1 - cpu->carryFlag);
-    cpu->acc = result & 0xFF;
-    printf("\t\tSubtracted %d (0x%02X) - %d (borrow) from zero page address (0x%02X) from Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, (1 - cpu->carryFlag), zp_address, cpu->acc, cpu->acc);
-    cpu->carryFlag = (result <= 0xFF) ? 1 : 0;
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-    cpu->overflow = ((old_acc ^ operand) & (old_acc ^ cpu->acc) & 0x80) != 0;
-}
-
-// SBC oper, X - zeropage, X
-void instr_SBC_zeropage_x(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    byte zp_address_x = (zp_address + cpu->indX) & 0xFF;
-    byte operand = read_byte(zp_address_x, mem);
-    byte old_acc = cpu->acc;
-    word result = cpu->acc - operand - (1 - cpu->carryFlag);
-    cpu->acc = result & 0xFF;
-    printf("\t\tSubtracted %d (0x%02X) - %d (borrow) from zero page address (0x%02X),X\n\t\t(0x%02X + 0x%02X = 0x%02X) from Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, (1 - cpu->carryFlag), zp_address, 
-        zp_address, cpu->indX, zp_address_x, cpu->acc, cpu->acc);
-    cpu->carryFlag = (result <= 0xFF) ? 1 : 0;
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-    cpu->overflow = ((old_acc ^ operand) & (old_acc ^ cpu->acc) & 0x80) != 0;
-}
-
-// SBC oper - absolute
-void instr_SBC_absolute(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    byte operand = read_byte(abs_address, mem);
-    byte old_acc = cpu->acc;
-    word result = cpu->acc - operand - (1 - cpu->carryFlag);
-    cpu->acc = result & 0xFF;
-    printf("\t\tSubtracted %d (0x%02X) - %d (borrow) from absolute address (0x%04X) from Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, (1 - cpu->carryFlag), abs_address, cpu->acc, cpu->acc);
-    cpu->carryFlag = (result <= 0xFF) ? 1 : 0;
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-    cpu->overflow = ((old_acc ^ operand) & (old_acc ^ cpu->acc) & 0x80) != 0;
-}
-
-// SBC oper, X - absolute, X
-void instr_SBC_absolute_x(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    word abs_address_x = abs_address + cpu->indX;
-    byte operand = read_byte(abs_address_x, mem);
-    byte old_acc = cpu->acc;
-    word result = cpu->acc - operand - (1 - cpu->carryFlag);
-    cpu->acc = result & 0xFF;
-    printf("\t\tSubtracted %d (0x%02X) - %d (borrow) from absolute address (0x%04X),X\n\t\t(0x%04X + 0x%02X = 0x%04X) from Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, (1 - cpu->carryFlag), abs_address, 
-        abs_address, cpu->indX, abs_address_x, cpu->acc, cpu->acc);
-    cpu->carryFlag = (result <= 0xFF) ? 1 : 0;
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-    cpu->overflow = ((old_acc ^ operand) & (old_acc ^ cpu->acc) & 0x80) != 0;
-}
-
-// SBC oper, Y - absolute, Y
-void instr_SBC_absolute_y(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    word abs_address_y = abs_address + cpu->indY;
-    byte operand = read_byte(abs_address_y, mem);
-    byte old_acc = cpu->acc;
-    word result = cpu->acc - operand - (1 - cpu->carryFlag);
-    cpu->acc = result & 0xFF;
-    printf("\t\tSubtracted %d (0x%02X) - %d (borrow) from absolute address (0x%04X),Y\n\t\t(0x%04X + 0x%02X = 0x%04X) from Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, (1 - cpu->carryFlag), abs_address, 
-        abs_address, cpu->indY, abs_address_y, cpu->acc, cpu->acc);
-    cpu->carryFlag = (result <= 0xFF) ? 1 : 0;
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-    cpu->overflow = ((old_acc ^ operand) & (old_acc ^ cpu->acc) & 0x80) != 0;
-}
-
-// SBC (oper, X) - (indirect,X)
-void instr_SBC_indirect_x(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    word zp_pointer = (zp_address + cpu->indX) & 0xFF;
-    word final_address = read_word(zp_pointer, mem);
-    byte operand = read_byte(final_address, mem);
-    byte old_acc = cpu->acc;
-    word result = cpu->acc - operand - (1 - cpu->carryFlag);
-    cpu->acc = result & 0xFF;
-    printf("\t\tSubtracted %d (0x%02X) - %d (borrow) from ($%02X,X)\n\t\t($%02X + $%02X = $%02X) -> $%04X from Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, (1 - cpu->carryFlag), zp_address,
-        zp_address, cpu->indX, zp_pointer, final_address, cpu->acc, cpu->acc);
-    cpu->carryFlag = (result <= 0xFF) ? 1 : 0;
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-    cpu->overflow = ((old_acc ^ operand) & (old_acc ^ cpu->acc) & 0x80) != 0;
-}
-
-// SBC (oper), Y - (indirect), Y
-void instr_SBC_indirect_y(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    word base_pointer = read_word(zp_address, mem);
-    word final_address = base_pointer + cpu->indY;
-    byte operand = read_byte(final_address, mem);
-    byte old_acc = cpu->acc;
-    word result = cpu->acc - operand - (1 - cpu->carryFlag);
-    cpu->acc = result & 0xFF;
-    printf("\t\tSubtracted %d (0x%02X) - %d (borrow) from ($%02X),Y\n\t\t($%04X + $%02X = $%04X) from Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, (1 - cpu->carryFlag), zp_address,
-        base_pointer, cpu->indY, final_address, cpu->acc, cpu->acc);
-    cpu->carryFlag = (result <= 0xFF) ? 1 : 0;
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-    cpu->overflow = ((old_acc ^ operand) & (old_acc ^ cpu->acc) & 0x80) != 0;
-}
-
 // Logical instructions
 
-// AND instructions
-
-// AND #oper - immediate
-// Performs bitwise AND between accumulator and immediate operand
-// Ex. AND #$42 - ANDs accumulator with immediate value $42
-void instr_AND_immediate(cpu_t* cpu, mem_t* mem){
-    byte operand = fetch_byte(cpu, mem);
+void instr_AND(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
+    word address = get_operand_address(cpu, mem, mode);
+    byte operand = read_byte(address, mem);
     cpu->acc &= operand;
     printf("\t\tPerformed bitwise AND with %d (0x%02X) and Accumulator\n\t\tResult: %d (0x%02X)\n",
         operand, operand, cpu->acc, cpu->acc);
@@ -919,111 +318,9 @@ void instr_AND_immediate(cpu_t* cpu, mem_t* mem){
     cpu->negative = (cpu->acc & 0x80) != 0;
 }
 
-// AND oper - zero page
-// Performs bitwise AND between accumulator and value from zero page address
-// Ex. AND $42 - ANDs accumulator with value from zero page address $42
-void instr_AND_zeropage(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    byte operand = read_byte(zp_address, mem);
-    cpu->acc &= operand;
-    printf("\t\tPerformed bitwise AND with %d (0x%02X)\n\t\tfrom zero page address (0x%02X) and Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, zp_address, cpu->acc, cpu->acc);
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-}
-
-// AND oper,X - zero page indexed with X
-// Performs bitwise AND between accumulator and value from zero page address + X
-// Ex. AND $42,X - ANDs accumulator with value from zero page address ($42 + X)
-void instr_AND_zeropage_x(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    byte zp_address_x = (zp_address + cpu->indX) & 0xFF;
-    byte operand = read_byte(zp_address_x, mem);
-    cpu->acc &= operand;
-    printf("\t\tPerformed bitwise AND with %d (0x%02X)\n\t\tfrom zero page address (0x%02X),X\n\t\t(0x%02X + 0x%02X = 0x%02X) and Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, zp_address, zp_address, cpu->indX, zp_address_x, cpu->acc, cpu->acc);
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-}
-
-// AND oper - absolute
-// Performs bitwise AND between accumulator and value from absolute address
-// Ex. AND $1234 - ANDs accumulator with value from absolute address $1234
-void instr_AND_absolute(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    byte operand = read_byte(abs_address, mem);
-    cpu->acc &= operand;
-    printf("\t\tPerformed bitwise AND with %d (0x%02X)\n\t\tfrom absolute address (0x%04X) and Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, abs_address, cpu->acc, cpu->acc);
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-}
-
-// AND oper,X - absolute indexed with X
-// Performs bitwise AND between accumulator and value from absolute address + X
-// Ex. AND $1234,X - ANDs accumulator with value from absolute address ($1234 + X)
-void instr_AND_absolute_x(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    word abs_address_x = abs_address + cpu->indX;
-    byte operand = read_byte(abs_address_x, mem);
-    cpu->acc &= operand;
-    printf("\t\tPerformed bitwise AND with %d (0x%02X)\n\t\tfrom absolute address (0x%04X),X\n\t\t(0x%04X + 0x%02X = 0x%04X) and Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, abs_address, abs_address, cpu->indX, abs_address_x, cpu->acc, cpu->acc);
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-}
-
-// AND oper,Y - absolute indexed with Y
-// Performs bitwise AND between accumulator and value from absolute address + Y
-// Ex. AND $1234,Y - ANDs accumulator with value from absolute address ($1234 + Y)
-void instr_AND_absolute_y(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    word abs_address_y = abs_address + cpu->indY;
-    byte operand = read_byte(abs_address_y, mem);
-    cpu->acc &= operand;
-    printf("\t\tPerformed bitwise AND with %d (0x%02X)\n\t\tfrom absolute address (0x%04X),Y\n\t\t(0x%04X + 0x%02X = 0x%04X) and Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, abs_address, abs_address, cpu->indY, abs_address_y, cpu->acc, cpu->acc);
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-}
-
-// AND (oper,X) - indexed indirect
-// Performs bitwise AND between accumulator and value from address pointed to by (zero page address + X)
-// Ex. AND ($42,X) - ANDs accumulator with value from address stored at zero page ($42 + X)
-void instr_AND_indirect_x(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    word zp_pointer = (zp_address + cpu->indX) & 0xFF;
-    word final_address = read_word(zp_pointer, mem);
-    byte operand = read_byte(final_address, mem);
-    cpu->acc &= operand;
-    printf("\t\tPerformed bitwise AND with %d (0x%02X) from ($%02X,X)\n\t\t($%02X + $%02X = $%02X) -> $%04X and Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, zp_address, zp_address, cpu->indX, zp_pointer, final_address, cpu->acc, cpu->acc);
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-}
-
-// AND (oper),Y - indirect indexed
-// Performs bitwise AND between accumulator and value from (address pointed to by zero page address) + Y
-// Ex. AND ($42),Y - ANDs accumulator with value from (address at $42) + Y
-void instr_AND_indirect_y(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    word base_pointer = read_word(zp_address, mem);
-    word final_address = base_pointer + cpu->indY;
-    byte operand = read_byte(final_address, mem);
-    cpu->acc &= operand;
-    printf("\t\tPerformed bitwise AND with %d (0x%02X) from ($%02X),Y\n\t\t($%04X + $%02X = $%04X) and Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, zp_address, base_pointer, cpu->indY, final_address, cpu->acc, cpu->acc);
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-}
-
-// EOR instructions
-
-// EOR #oper - immediate
-// Performs bitwise exclusive OR between accumulator and immediate operand
-// Ex. EOR #$42 - XORs accumulator with immediate value $42
-void instr_EOR_immediate(cpu_t* cpu, mem_t* mem){
-    byte operand = fetch_byte(cpu, mem);
+void instr_EOR(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
+    word address = get_operand_address(cpu, mem, mode);
+    byte operand = read_byte(address, mem);
     cpu->acc ^= operand;
     printf("\t\tPerformed bitwise EOR with %d (0x%02X) and Accumulator\n\t\tResult: %d (0x%02X)\n",
         operand, operand, cpu->acc, cpu->acc);
@@ -1031,212 +328,12 @@ void instr_EOR_immediate(cpu_t* cpu, mem_t* mem){
     cpu->negative = (cpu->acc & 0x80) != 0;
 }
 
-// EOR oper - zero page
-// Performs bitwise exclusive OR between accumulator and value from zero page address
-// Ex. EOR $42 - XORs accumulator with value from zero page address $42
-void instr_EOR_zeropage(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    byte operand = read_byte(zp_address, mem);
-    cpu->acc ^= operand;
-    printf("\t\tPerformed bitwise EOR with %d (0x%02X)\n\t\tfrom zero page address (0x%02X) and Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, zp_address, cpu->acc, cpu->acc);
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-}
-
-// EOR oper,X - zero page indexed with X
-// Performs bitwise exclusive OR between accumulator and value from zero page address + X
-// Ex. EOR $42,X - XORs accumulator with value from zero page address ($42 + X)
-void instr_EOR_zeropage_x(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    byte zp_address_x = (zp_address + cpu->indX) & 0xFF;
-    byte operand = read_byte(zp_address_x, mem);
-    cpu->acc ^= operand;
-    printf("\t\tPerformed bitwise EOR with %d (0x%02X)\n\t\tfrom zero page address (0x%02X),X\n\t\t(0x%02X + 0x%02X = 0x%02X) and Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, zp_address, zp_address, cpu->indX, zp_address_x, cpu->acc, cpu->acc);
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-}
-
-// EOR oper - absolute
-// Performs bitwise exclusive OR between accumulator and value from absolute address
-// Ex. EOR $1234 - XORs accumulator with value from absolute address $1234
-void instr_EOR_absolute(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    byte operand = read_byte(abs_address, mem);
-    cpu->acc ^= operand;
-    printf("\t\tPerformed bitwise EOR with %d (0x%02X)\n\t\tfrom absolute address (0x%04X) and Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, abs_address, cpu->acc, cpu->acc);
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-}
-
-// EOR oper,X - absolute indexed with X
-// Performs bitwise exclusive OR between accumulator and value from absolute address + X
-// Ex. EOR $1234,X - XORs accumulator with value from absolute address ($1234 + X)
-void instr_EOR_absolute_x(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    word abs_address_x = abs_address + cpu->indX;
-    byte operand = read_byte(abs_address_x, mem);
-    cpu->acc ^= operand;
-    printf("\t\tPerformed bitwise EOR with %d (0x%02X)\n\t\tfrom absolute address (0x%04X),X\n\t\t(0x%04X + 0x%02X = 0x%04X) and Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, abs_address, abs_address, cpu->indX, abs_address_x, cpu->acc, cpu->acc);
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-}
-
-// EOR oper,Y - absolute indexed with Y
-// Performs bitwise exclusive OR between accumulator and value from absolute address + Y
-// Ex. EOR $1234,Y - XORs accumulator with value from absolute address ($1234 + Y)
-void instr_EOR_absolute_y(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    word abs_address_y = abs_address + cpu->indY;
-    byte operand = read_byte(abs_address_y, mem);
-    cpu->acc ^= operand;
-    printf("\t\tPerformed bitwise EOR with %d (0x%02X)\n\t\tfrom absolute address (0x%04X),Y\n\t\t(0x%04X + 0x%02X = 0x%04X) and Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, abs_address, abs_address, cpu->indY, abs_address_y, cpu->acc, cpu->acc);
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-}
-
-// EOR (oper,X) - indexed indirect
-// Performs bitwise exclusive OR between accumulator and value from address pointed to by (zero page address + X)
-// Ex. EOR ($42,X) - XORs accumulator with value from address stored at zero page ($42 + X)
-void instr_EOR_indirect_x(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    word zp_pointer = (zp_address + cpu->indX) & 0xFF;
-    word final_address = read_word(zp_pointer, mem);
-    byte operand = read_byte(final_address, mem);
-    cpu->acc ^= operand;
-    printf("\t\tPerformed bitwise EOR with %d (0x%02X) from ($%02X,X)\n\t\t($%02X + $%02X = $%02X) -> $%04X and Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, zp_address, zp_address, cpu->indX, zp_pointer, final_address, cpu->acc, cpu->acc);
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-}
-
-// EOR (oper),Y - indirect indexed
-// Performs bitwise exclusive OR between accumulator and value from (address pointed to by zero page address) + Y
-// Ex. EOR ($42),Y - XORs accumulator with value from (address at $42) + Y
-void instr_EOR_indirect_y(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    word base_pointer = read_word(zp_address, mem);
-    word final_address = base_pointer + cpu->indY;
-    byte operand = read_byte(final_address, mem);
-    cpu->acc ^= operand;
-    printf("\t\tPerformed bitwise EOR with %d (0x%02X) from ($%02X),Y\n\t\t($%04X + $%02X = $%04X) and Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, zp_address, base_pointer, cpu->indY, final_address, cpu->acc, cpu->acc);
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-}
-
-// ORA instructions
-
-// ORA #oper - immediate
-// Performs bitwise inclusive OR between accumulator and immediate operand
-// Ex. ORA #$42 - ORs accumulator with immediate value $42
-void instr_ORA_immediate(cpu_t* cpu, mem_t* mem){
-    byte operand = fetch_byte(cpu, mem);
+void instr_ORA(cpu_t* cpu, mem_t* mem, addressing_mode_t mode){
+    word address = get_operand_address(cpu, mem, mode);
+    byte operand = read_byte(address, mem);
     cpu->acc |= operand;
     printf("\t\tPerformed bitwise ORA with %d (0x%02X) and Accumulator\n\t\tResult: %d (0x%02X)\n",
         operand, operand, cpu->acc, cpu->acc);
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-}
-
-// ORA oper - zero page
-// Performs bitwise inclusive OR between accumulator and value from zero page address
-// Ex. ORA $42 - ORs accumulator with value from zero page address $42
-void instr_ORA_zeropage(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    byte operand = read_byte(zp_address, mem);
-    cpu->acc |= operand;
-    printf("\t\tPerformed bitwise ORA with %d (0x%02X)\n\t\tfrom zero page address (0x%02X) and Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, zp_address, cpu->acc, cpu->acc);
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-}
-
-// ORA oper,X - zero page indexed with X
-// Performs bitwise inclusive OR between accumulator and value from zero page address + X
-// Ex. ORA $42,X - ORs accumulator with value from zero page address ($42 + X)
-void instr_ORA_zeropage_x(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    byte zp_address_x = (zp_address + cpu->indX) & 0xFF;
-    byte operand = read_byte(zp_address_x, mem);
-    cpu->acc |= operand;
-    printf("\t\tPerformed bitwise ORA with %d (0x%02X)\n\t\tfrom zero page address (0x%02X),X\n\t\t(0x%02X + 0x%02X = 0x%02X) and Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, zp_address, zp_address, cpu->indX, zp_address_x, cpu->acc, cpu->acc);
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-}
-
-// ORA oper - absolute
-// Performs bitwise inclusive OR between accumulator and value from absolute address
-// Ex. ORA $1234 - ORs accumulator with value from absolute address $1234
-void instr_ORA_absolute(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    byte operand = read_byte(abs_address, mem);
-    cpu->acc |= operand;
-    printf("\t\tPerformed bitwise ORA with %d (0x%02X)\n\t\tfrom absolute address (0x%04X) and Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, abs_address, cpu->acc, cpu->acc);
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-}
-
-// ORA oper,X - absolute indexed with X
-// Performs bitwise inclusive OR between accumulator and value from absolute address + X
-// Ex. ORA $1234,X - ORs accumulator with value from absolute address ($1234 + X)
-void instr_ORA_absolute_x(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    word abs_address_x = abs_address + cpu->indX;
-    byte operand = read_byte(abs_address_x, mem);
-    cpu->acc |= operand;
-    printf("\t\tPerformed bitwise ORA with %d (0x%02X)\n\t\tfrom absolute address (0x%04X),X\n\t\t(0x%04X + 0x%02X = 0x%04X) and Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, abs_address, abs_address, cpu->indX, abs_address_x, cpu->acc, cpu->acc);
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-}
-
-// ORA oper,Y - absolute indexed with Y
-// Performs bitwise inclusive OR between accumulator and value from absolute address + Y
-// Ex. ORA $1234,Y - ORs accumulator with value from absolute address ($1234 + Y)
-void instr_ORA_absolute_y(cpu_t* cpu, mem_t* mem){
-    word abs_address = fetch_word(cpu, mem);
-    word abs_address_y = abs_address + cpu->indY;
-    byte operand = read_byte(abs_address_y, mem);
-    cpu->acc |= operand;
-    printf("\t\tPerformed bitwise ORA with %d (0x%02X)\n\t\tfrom absolute address (0x%04X),Y\n\t\t(0x%04X + 0x%02X = 0x%04X) and Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, abs_address, abs_address, cpu->indY, abs_address_y, cpu->acc, cpu->acc);
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-}
-
-// ORA (oper,X) - indexed indirect
-// Performs bitwise inclusive OR between accumulator and value from address pointed to by (zero page address + X)
-// Ex. ORA ($42,X) - ORs accumulator with value from address stored at zero page ($42 + X)
-void instr_ORA_indirect_x(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    word zp_pointer = (zp_address + cpu->indX) & 0xFF;
-    word final_address = read_word(zp_pointer, mem);
-    byte operand = read_byte(final_address, mem);
-    cpu->acc |= operand;
-    printf("\t\tPerformed bitwise ORA with %d (0x%02X) from ($%02X,X)\n\t\t($%02X + $%02X = $%02X) -> $%04X and Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, zp_address, zp_address, cpu->indX, zp_pointer, final_address, cpu->acc, cpu->acc);
-    cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
-    cpu->negative = (cpu->acc & 0x80) != 0;
-}
-
-// ORA (oper),Y - indirect indexed
-// Performs bitwise inclusive OR between accumulator and value from (address pointed to by zero page address) + Y
-// Ex. ORA ($42),Y - ORs accumulator with value from (address at $42) + Y
-void instr_ORA_indirect_y(cpu_t* cpu, mem_t* mem){
-    byte zp_address = fetch_byte(cpu, mem);
-    word base_pointer = read_word(zp_address, mem);
-    word final_address = base_pointer + cpu->indY;
-    byte operand = read_byte(final_address, mem);
-    cpu->acc |= operand;
-    printf("\t\tPerformed bitwise ORA with %d (0x%02X) from ($%02X),Y\n\t\t($%04X + $%02X = $%04X) and Accumulator\n\t\tResult: %d (0x%02X)\n",
-        operand, operand, zp_address, base_pointer, cpu->indY, final_address, cpu->acc, cpu->acc);
     cpu->zeroFlag = (cpu->acc == 0) ? 1 : 0;
     cpu->negative = (cpu->acc & 0x80) != 0;
 }

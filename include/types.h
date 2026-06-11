@@ -36,10 +36,26 @@ typedef struct{
     byte data[max_mem]; // Memory array of 64KB
 } mem_t;
 
+typedef enum {
+    IMPLIED,
+    IMMEDIATE,
+    ABSOLUTE,
+    ZEROPAGE,
+    ABSOLUTE_X,
+    ABSOLUTE_Y,
+    ZEROPAGE_X,
+    ZEROPAGE_Y,
+    INDIRECT,
+    INDIRECT_X,
+    INDIRECT_Y,
+    RELATIVE
+} addressing_mode_t;
+
 typedef struct {
     const char* name;
     byte cycles;
-    void (*execute)(cpu_t* cpu, mem_t* mem);
+    void (*execute)(cpu_t* cpu, mem_t* mem, addressing_mode_t mode);
+    addressing_mode_t mode;
 } instruction_t;
 
 #endif

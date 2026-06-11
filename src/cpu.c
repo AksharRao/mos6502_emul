@@ -68,7 +68,7 @@ void exec_instr(dword *clk_cycle, cpu_t *cpu, mem_t *mem){
     //Fetch the instruction from memory at current PC
     while (*clk_cycle > 0 && !cpu->breakFlag) {
         byte instruction = fetch_byte(cpu, mem);
-        instruction_t* instr = &instruction_table[instruction];
+        const instruction_t* instr = &instruction_table[instruction];
 
         if (instr->execute == NULL) {
             printf("Unknown opcode: 0x%02X at PC: 0x%04X\n", instruction, cpu->pc);
@@ -80,7 +80,7 @@ void exec_instr(dword *clk_cycle, cpu_t *cpu, mem_t *mem){
             break;
         }
         printf("Executing: %s (0x%02X) - %d cycles\n", instr->name, instruction, instr->cycles);
-        instr->execute(cpu, mem);
+        instr->execute(cpu, mem, instr->mode);
         *clk_cycle -= instr->cycles;
         print_cpu_state(cpu);
         #ifdef DEBUG_MEMORY
